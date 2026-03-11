@@ -4,6 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>WARP – משחקי חינם</title>
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-N3JTRQPYRV"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-N3JTRQPYRV');
+</script>
 <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;600;700;900&family=Heebo:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -33,10 +41,57 @@ header{position:sticky;top:0;z-index:200;background:rgba(10,11,20,.9);backdrop-f
 .search input:focus{border-color:var(--purple);box-shadow:0 0 0 3px rgba(123,47,255,.12);}
 .search input::placeholder{color:var(--muted);}
 .search-ic{position:absolute;left:15px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:.9rem;pointer-events:none;}
-.hdr-right{margin-right:auto;}
+.hdr-right{margin-right:auto;display:flex;align-items:center;gap:.6rem;}
 .btn{padding:8px 20px;border-radius:50px;font-family:inherit;font-weight:700;font-size:.82rem;cursor:pointer;border:none;transition:var(--t);}
 .btn-primary{background:linear-gradient(135deg,var(--purple),var(--accent));color:#fff;box-shadow:0 3px 16px rgba(123,47,255,.3);}
 .btn-primary:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(255,62,108,.35);}
+.btn-ghost{background:transparent;color:var(--muted);border:1.5px solid var(--border);}
+.btn-ghost:hover{color:var(--text);border-color:var(--purple);}
+
+/* USER AVATAR */
+.user-avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--purple),var(--blue));display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:800;cursor:pointer;border:2px solid var(--border);transition:var(--t);position:relative;flex-shrink:0;}
+.user-avatar:hover{border-color:var(--purple);box-shadow:0 0 12px rgba(123,47,255,.4);}
+.user-avatar .anon-dot{position:absolute;bottom:0;right:0;width:9px;height:9px;border-radius:50%;background:#888;border:2px solid var(--bg);}
+.user-avatar .auth-dot{position:absolute;bottom:0;right:0;width:9px;height:9px;border-radius:50%;background:#00e676;border:2px solid var(--bg);}
+
+/* USER DROPDOWN */
+.user-dropdown{position:absolute;top:52px;left:0;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);width:220px;overflow:hidden;box-shadow:0 20px 50px rgba(0,0,0,.7);display:none;z-index:300;animation:fadeUp .2s ease;}
+.user-dropdown.open{display:block;}
+.ud-info{padding:12px 14px;border-bottom:1px solid var(--border);}
+.ud-info .ud-name{font-size:.85rem;font-weight:700;margin-bottom:2px;}
+.ud-info .ud-email{font-size:.72rem;color:var(--muted);}
+.ud-btn{width:100%;padding:10px 14px;background:none;border:none;color:var(--text);font-family:inherit;font-size:.82rem;font-weight:600;text-align:right;cursor:pointer;transition:var(--t);display:flex;align-items:center;gap:8px;}
+.ud-btn:hover{background:rgba(123,47,255,.1);color:var(--purple);}
+.ud-btn.danger:hover{background:rgba(255,62,108,.1);color:var(--accent);}
+
+/* AUTH MODAL */
+.auth-modal-bg{position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.85);backdrop-filter:blur(10px);display:none;align-items:center;justify-content:center;}
+.auth-modal-bg.open{display:flex;}
+.auth-modal{background:var(--bg2);border:1px solid rgba(123,47,255,.3);border-radius:20px;width:100%;max-width:400px;padding:2rem;animation:modalIn .25s ease;position:relative;}
+@keyframes modalIn{from{opacity:0;transform:scale(.94) translateY(16px);}to{opacity:1;transform:scale(1) translateY(0);}}
+.auth-close{position:absolute;top:1rem;left:1rem;width:30px;height:30px;border-radius:8px;background:var(--card);border:1px solid var(--border);color:var(--muted);font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:var(--t);}
+.auth-close:hover{color:var(--accent);border-color:var(--accent);}
+.auth-logo{text-align:center;margin-bottom:1.5rem;}
+.auth-logo .al-icon{width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,var(--purple),var(--accent));display:flex;align-items:center;justify-content:center;font-size:24px;margin:0 auto .75rem;box-shadow:0 0 24px rgba(123,47,255,.4);}
+.auth-logo h2{font-size:1.2rem;font-weight:900;}
+.auth-logo p{font-size:.8rem;color:var(--muted);margin-top:4px;}
+.auth-tabs{display:flex;background:var(--bg3);border-radius:50px;padding:3px;margin-bottom:1.4rem;}
+.auth-tab{flex:1;padding:7px;border-radius:50px;font-family:inherit;font-weight:700;font-size:.8rem;border:none;cursor:pointer;background:none;color:var(--muted);transition:var(--t);}
+.auth-tab.active{background:linear-gradient(135deg,var(--purple),var(--accent));color:#fff;}
+.auth-field{margin-bottom:1rem;}
+.auth-field label{font-size:.75rem;font-weight:700;color:var(--muted);display:block;margin-bottom:5px;}
+.auth-field input{width:100%;padding:10px 14px;background:var(--bg3);border:1.5px solid var(--border);border-radius:10px;color:var(--text);font-family:inherit;font-size:.88rem;outline:none;transition:var(--t);}
+.auth-field input:focus{border-color:var(--purple);box-shadow:0 0 0 3px rgba(123,47,255,.12);}
+.auth-submit{width:100%;padding:11px;border-radius:10px;background:linear-gradient(135deg,var(--purple),var(--accent));color:#fff;font-family:inherit;font-weight:800;font-size:.9rem;border:none;cursor:pointer;transition:var(--t);margin-bottom:.8rem;}
+.auth-submit:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(123,47,255,.4);}
+.auth-submit:disabled{opacity:.5;cursor:not-allowed;transform:none;}
+.auth-divider{display:flex;align-items:center;gap:.75rem;margin:.8rem 0;color:var(--muted);font-size:.75rem;}
+.auth-divider::before,.auth-divider::after{content:"";flex:1;height:1px;background:var(--border);}
+.btn-google{width:100%;padding:10px;border-radius:10px;background:var(--bg3);border:1.5px solid var(--border);color:var(--text);font-family:inherit;font-weight:700;font-size:.85rem;cursor:pointer;transition:var(--t);display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:.6rem;}
+.btn-google:hover{border-color:var(--purple);background:rgba(123,47,255,.08);}
+.btn-anon{width:100%;padding:9px;border-radius:10px;background:none;border:1px dashed rgba(255,255,255,.15);color:var(--muted);font-family:inherit;font-weight:600;font-size:.78rem;cursor:pointer;transition:var(--t);}
+.btn-anon:hover{border-color:var(--muted);color:var(--text);}
+.auth-err{background:rgba(255,62,108,.1);border:1px solid rgba(255,62,108,.3);border-radius:8px;padding:8px 12px;font-size:.78rem;color:var(--accent);margin-bottom:.75rem;display:none;}
 
 /* CATBAR */
 nav.catbar{background:var(--bg2);border-bottom:1px solid var(--border);position:sticky;top:62px;z-index:100;}
@@ -81,16 +136,28 @@ main{max-width:1300px;margin:0 auto;padding:2rem 1.5rem 5rem;position:relative;z
 .badge-new{background:var(--accent);color:#fff;}
 .badge-hot{background:linear-gradient(135deg,#ff6b00,var(--gold));color:#000;}
 .badge-top{background:linear-gradient(135deg,var(--purple),var(--blue));color:#fff;}
+
+/* EMBEDDABLE BADGE */
+.embed-badge{position:absolute;top:7px;left:7px;padding:3px 9px;border-radius:50px;font-size:.6rem;font-weight:800;letter-spacing:.3px;display:flex;align-items:center;gap:4px;backdrop-filter:blur(6px);}
+.embed-yes{background:rgba(0,230,118,.18);color:#00e676;border:1px solid rgba(0,230,118,.35);}
+.embed-no{background:rgba(255,62,108,.18);color:#ff3e6c;border:1px solid rgba(255,62,108,.35);}
+
+/* BLOCKED CARD OVERLAY */
+.card.blocked .card-thumb::after{content:"";position:absolute;inset:0;background:rgba(0,0,0,.45);pointer-events:none;}
+.card.blocked{opacity:.85;}
+.card.blocked:hover{border-color:rgba(255,62,108,.5);box-shadow:0 16px 40px rgba(0,0,0,.45),0 0 0 1px rgba(255,62,108,.5),0 0 30px rgba(255,62,108,.12);}
+.play-circle-ext{width:46px;height:46px;border-radius:50%;background:rgba(255,255,255,.12);border:2px solid rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center;font-size:1rem;color:#fff;transform:scale(.8);transition:var(--t);}
+.card:hover .play-circle-ext{transform:scale(1);}
+
 .card-body{padding:10px 12px 12px;}
 .card-name{font-size:.85rem;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:6px;}
 .card-tags{display:flex;gap:4px;flex-wrap:wrap;}
 .tag{font-size:.62rem;font-weight:600;background:var(--bg3);color:var(--muted);padding:2px 8px;border-radius:50px;border:1px solid var(--border);}
 
-/* MODAL */
+/* GAME MODAL */
 .modal-bg{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.92);backdrop-filter:blur(8px);display:none;align-items:stretch;justify-content:center;padding:0;}
 .modal-bg.open{display:flex;}
 .modal{background:var(--bg2);border-left:1px solid rgba(123,47,255,.25);border-right:1px solid rgba(123,47,255,.25);width:100%;max-width:1100px;margin:0 auto;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 0 80px rgba(0,0,0,.8);animation:modalIn .25s ease;height:100vh;}
-@keyframes modalIn{from{opacity:0;transform:scale(.94) translateY(16px);}to{opacity:1;transform:scale(1) translateY(0);}}
 .modal-hdr{display:flex;align-items:center;gap:.75rem;padding:.9rem 1.25rem;border-bottom:1px solid var(--border);background:var(--bg3);flex-wrap:wrap;}
 .modal-title{font-size:.95rem;font-weight:800;flex:1;}
 .modal-close{width:32px;height:32px;border-radius:8px;background:var(--card);border:1px solid var(--border);color:var(--muted);font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:var(--t);flex-shrink:0;}
@@ -106,6 +173,12 @@ main{max-width:1300px;margin:0 auto;padding:2rem 1.5rem 5rem;position:relative;z
 #no-results{display:none;text-align:center;padding:4rem 2rem;color:var(--muted);}
 #no-results .ico{font-size:2.5rem;opacity:.3;margin-bottom:.75rem;}
 
+/* TOAST */
+.toast{position:fixed;bottom:2rem;right:50%;transform:translateX(50%);background:var(--bg3);border:1px solid var(--border);border-radius:50px;padding:10px 20px;font-size:.82rem;font-weight:700;color:var(--text);z-index:900;box-shadow:0 8px 30px rgba(0,0,0,.5);transition:opacity .3s ease,transform .3s ease;opacity:0;pointer-events:none;}
+.toast.show{opacity:1;}
+.toast.success{border-color:rgba(0,230,118,.4);color:#00e676;}
+.toast.error{border-color:rgba(255,62,108,.4);color:var(--accent);}
+
 /* FOOTER */
 footer{background:var(--bg2);border-top:1px solid var(--border);padding:2rem 1.5rem;text-align:center;color:var(--muted);font-size:.78rem;position:relative;z-index:1;}
 
@@ -119,67 +192,388 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:2rem 1.5
 </head>
 <body>
 
+<!-- HEADER -->
 <header>
   <div class="hdr">
     <a href="#" class="logo">
-      <div class="logo-icon">&#9889;</div>
+      <div class="logo-icon">⚡</div>
       <span class="logo-name">WARP</span>
     </a>
     <div class="search">
-      <span class="search-ic">&#128269;</span>
-      <input type="text" id="searchInput" placeholder="&#1495;&#1508;&#1513; &#1502;&#1513;&#1495;&#1511;, &#1514;&#1490;&#1497;&#1514;, &#1511;&#1496;&#1490;&#1493;&#1512;&#1497;&#1492;...">
+      <span class="search-ic">🔍</span>
+      <input type="text" id="searchInput" placeholder="חפש משחק, תגית, קטגוריה...">
     </div>
     <div class="hdr-right">
-      <button class="btn btn-primary">&#128640; <span>&#1492;&#1510;&#1496;&#1512;&#1507; &#1495;&#1497;&#1504;&#1501;</span></button>
+      <div id="userMenu" style="position:relative;">
+        <div class="user-avatar" id="userAvatar" onclick="toggleDropdown()">
+          <span id="userInitial">?</span>
+          <span class="anon-dot" id="userDot"></span>
+        </div>
+        <div class="user-dropdown" id="userDropdown">
+          <div class="ud-info">
+            <div class="ud-name" id="udName">אנונימי</div>
+            <div class="ud-email" id="udEmail">לא מחובר לחשבון</div>
+          </div>
+          <button class="ud-btn" id="udAuthBtn" onclick="openAuth()">🔑 התחברות / הרשמה</button>
+          <button class="ud-btn danger" id="udSignout" onclick="signOutUser()" style="display:none">🚪 התנתקות</button>
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="openAuth()">🚀 <span>הצטרף חינם</span></button>
     </div>
   </div>
 </header>
 
 <nav class="catbar">
   <div class="catbar-inner" id="catBar">
-    <button class="cat active" data-cat="all">&#127918; &#1492;&#1499;&#1500;</button>
+    <button class="cat active" data-cat="all">🎮 הכל</button>
   </div>
 </nav>
 
 <main id="main">
   <div class="state-box" id="loadingState">
-    <div class="ico">&#9203;</div>
-    <p>&#1496;&#1493;&#1506;&#1503; &#1502;&#1513;&#1495;&#1511;&#1497;&#1501;...</p>
+    <div class="ico">⏳</div>
+    <p>טוען משחקים...</p>
   </div>
   <div class="state-box" id="errorState" style="display:none">
-    <div class="ico">&#10060;</div>
-    <p id="errorMsg">&#1513;&#1490;&#1497;&#1488;&#1492; &#1489;&#1496;&#1506;&#1497;&#1504;&#1514; games.json</p>
+    <div class="ico">❌</div>
+    <p id="errorMsg">שגיאה בטעינת games.json</p>
   </div>
   <div id="content" style="display:none">
     <div id="no-results">
-      <div class="ico">&#128269;</div>
-      <p>&#1500;&#1488; &#1504;&#1502;&#1510;&#1488;&#1493; &#1502;&#1513;&#1495;&#1511;&#1497;&#1501;</p>
+      <div class="ico">🔍</div>
+      <p>לא נמצאו משחקים</p>
     </div>
   </div>
 </main>
 
+<!-- GAME MODAL -->
 <div class="modal-bg" id="modalBg">
   <div class="modal">
     <div class="modal-hdr">
       <span id="modalTitle" class="modal-title"></span>
       <div id="modalMeta" style="display:flex;gap:4px;flex-wrap:wrap;"></div>
-      <button class="modal-close" id="modalClose">&#10005;</button>
+      <button class="modal-close" id="modalClose">✕</button>
     </div>
     <div class="modal-body">
       <iframe id="modalIframe" allowfullscreen></iframe>
       <div class="modal-err" id="modalErr">
-        <div class="ico">&#128683;</div>
-        <p>&#1492;&#1488;&#1514;&#1512; &#1492;&#1494;&#1492; &#1495;&#1493;&#1505;&#1501; &#1492;&#1496;&#1502;&#1506;&#1492; &#1489;-iframe.</p>
-        <a id="modalOpenLink" href="#" target="_blank" rel="noopener">&#1508;&#1514;&#1495; &#1502;&#1513;&#1495;&#1511; &#8599;</a>
+        <div class="ico">🚫</div>
+        <p>האתר הזה חוסם הטמעה ב-iframe.</p>
+        <a id="modalOpenLink" href="#" target="_blank" rel="noopener">פתח משחק ↗</a>
       </div>
     </div>
   </div>
 </div>
 
+<!-- AUTH MODAL -->
+<div class="auth-modal-bg" id="authBg">
+  <div class="auth-modal">
+    <button class="auth-close" onclick="closeAuth()">✕</button>
+    <div class="auth-logo">
+      <div class="al-icon">⚡</div>
+      <h2>ברוך הבא ל-WARP</h2>
+      <p>שמור את ההתקדמות שלך בכל המשחקים</p>
+    </div>
+
+    <!-- Google + Anon buttons (always visible) -->
+    <button class="btn-google" onclick="signInWithGoogle()">
+      <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+      המשך עם Google
+    </button>
+    <button class="btn-anon" onclick="continueAnonymously()">👤 המשך בתור אורח (אנונימי)</button>
+
+    <div class="auth-divider">או עם מייל</div>
+
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tabLogin" onclick="switchTab('login')">התחברות</button>
+      <button class="auth-tab" id="tabRegister" onclick="switchTab('register')">הרשמה</button>
+    </div>
+
+    <div id="authErr" class="auth-err"></div>
+
+    <div id="loginForm">
+      <div class="auth-field">
+        <label>אימייל</label>
+        <input type="email" id="loginEmail" placeholder="you@example.com">
+      </div>
+      <div class="auth-field">
+        <label style="display:flex;justify-content:space-between;align-items:center;">
+          סיסמה
+          <button type="button" onclick="forgotPassword()" style="background:none;border:none;color:var(--blue);font-size:.7rem;font-weight:700;cursor:pointer;padding:0;font-family:inherit;">שכחתי סיסמה</button>
+        </label>
+        <input type="password" id="loginPass" placeholder="••••••••">
+      </div>
+      <button class="auth-submit" id="loginBtn" onclick="signInEmail()">כניסה</button>
+    </div>
+
+    <div id="registerForm" style="display:none">
+      <div class="auth-field">
+        <label>שם תצוגה</label>
+        <input type="text" id="regName" placeholder="השם שלך">
+      </div>
+      <div class="auth-field">
+        <label>אימייל</label>
+        <input type="email" id="regEmail" placeholder="you@example.com">
+      </div>
+      <div class="auth-field">
+        <label>סיסמה</label>
+        <input type="password" id="regPass" placeholder="לפחות 6 תווים">
+      </div>
+      <button class="auth-submit" id="registerBtn" onclick="registerEmail()">יצירת חשבון</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
 <footer>
-  &#169; 2025 WARP &mdash; &#1499;&#1500; &#1492;&#1502;&#1513;&#1495;&#1511;&#1497;&#1501; &#1489;&#1495;&#1497;&#1504;&#1501;, &#1489;&#1491;&#1508;&#1491;&#1508;&#1503;, &#1489;&#1500;&#1497; &#1492;&#1493;&#1512;&#1491;&#1493;&#1514;.
+  © 2025 WARP — כל המשחקים בחינם, בדפדפן, בלי הורדות.
 </footer>
 
+<!-- ==================== EARLY STUBS: prevent "not defined" errors before module loads ==================== -->
+<script>
+// These stubs ensure onclick= attributes don't throw before the Firebase module initialises.
+// The real implementations override them once the module is ready.
+['openAuth','closeAuth','switchTab','toggleDropdown','signInWithGoogle',
+ 'signInEmail','registerEmail','continueAnonymously','signOutUser','forgotPassword'
+].forEach(fn => {
+  if (!window[fn]) window[fn] = (...args) => {
+    // Queue the call until the real function is ready
+    document.addEventListener('_warpReady', () => window[fn](...args), { once: true });
+  };
+});
+</script>
+
+<!-- ==================== FIREBASE SDK ==================== -->
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getAnalytics, logEvent } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-analytics.js';
+import {
+  getAuth, onAuthStateChanged, signInAnonymously,
+  signInWithPopup, GoogleAuthProvider,
+  createUserWithEmailAndPassword, signInWithEmailAndPassword,
+  updateProfile, signOut, sendPasswordResetEmail
+} from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+import {
+  getFirestore, doc, getDoc, setDoc, deleteDoc, collection, getDocs
+} from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+// ── CONFIG ──────────────────────────────────────────────
+const firebaseConfig = {
+  apiKey: "AIzaSyAV04ASEGe-b_7UnmNjpOTH7RMwFF-I0O0",
+  authDomain: "warp-games.firebaseapp.com",
+  projectId: "warp-games",
+  storageBucket: "warp-games.firebasestorage.app",
+  messagingSenderId: "299502091770",
+  appId: "1:299502091770:web:582593b7b31884bfbcf843",
+  measurementId: "G-N3JTRQPYRV"
+};
+
+const app      = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+const auth     = getAuth(app);
+const db       = getFirestore(app);
+const googleProvider = new GoogleAuthProvider();
+
+// expose to global so non-module scripts can call them
+window._firebase = { auth, db, analytics, logEvent, googleProvider,
+  signInAnonymously, signInWithPopup, createUserWithEmailAndPassword,
+  signInWithEmailAndPassword, updateProfile, signOut, sendPasswordResetEmail,
+  doc, getDoc, setDoc, deleteDoc, collection, getDocs };
+
+// ── GA: page_view ────────────────────────────────────────
+logEvent(analytics, 'page_view', { page_title: 'WARP Games', page_location: location.href });
+
+// ── CLOUD localStorage PROXY ─────────────────────────────
+// Works like localStorage but syncs every key to Firestore under:
+//   users/{uid}/localStorage/{key}  →  { value: "..." }
+// Falls back to real localStorage when offline or not authed.
+
+const _lsCache = {}; // in-memory mirror
+
+async function loadCloudStorage(uid) {
+  try {
+    const col = collection(db, 'users', uid, 'localStorage');
+    const snap = await getDocs(col);
+    snap.forEach(d => { _lsCache[d.id] = d.data().value; });
+    console.log(`[WARP Cloud] Loaded ${snap.size} keys from Firestore`);
+  } catch(e) { console.warn('[WARP Cloud] Load failed', e); }
+}
+
+const cloudLS = {
+  setItem(key, value) {
+    value = String(value);
+    _lsCache[key] = value;
+    // persist to real localStorage as backup
+    try { localStorage.setItem(key, value); } catch(_) {}
+    // async write to Firestore
+    const uid = auth.currentUser?.uid;
+    if (uid) {
+      setDoc(doc(db, 'users', uid, 'localStorage', key), { value })
+        .catch(e => console.warn('[WARP Cloud] setItem failed', e));
+    }
+    logEvent(analytics, 'ls_set', { key });
+  },
+  getItem(key) {
+    if (key in _lsCache) return _lsCache[key];
+    try { return localStorage.getItem(key); } catch(_) { return null; }
+  },
+  removeItem(key) {
+    delete _lsCache[key];
+    try { localStorage.removeItem(key); } catch(_) {}
+    const uid = auth.currentUser?.uid;
+    if (uid) {
+      deleteDoc(doc(db, 'users', uid, 'localStorage', key))
+        .catch(e => console.warn('[WARP Cloud] removeItem failed', e));
+    }
+  },
+  clear() {
+    Object.keys(_lsCache).forEach(k => cloudLS.removeItem(k));
+  },
+  key(i) { return Object.keys(_lsCache)[i] ?? null; },
+  get length() { return Object.keys(_lsCache).length; }
+};
+
+// Override global localStorage on this page
+Object.defineProperty(window, 'localStorage', {
+  get: () => cloudLS,
+  configurable: true
+});
+
+// ── AUTH STATE ───────────────────────────────────────────
+onAuthStateChanged(auth, async user => {
+  window._currentUser = user;
+
+  if (user) {
+    // load cloud storage for this user
+    await loadCloudStorage(user.uid);
+
+    // update UI
+    const isAnon = user.isAnonymous;
+    const name   = user.displayName || (isAnon ? 'אורח' : user.email?.split('@')[0] || 'משתמש');
+    const initial = name[0].toUpperCase();
+
+    document.getElementById('userInitial').textContent = initial;
+    const dot = document.getElementById('userDot');
+    dot.className = isAnon ? 'anon-dot' : 'auth-dot';
+
+    document.getElementById('udName').textContent = name;
+    document.getElementById('udEmail').textContent = isAnon ? 'מצב אורח' : (user.email || '');
+    document.getElementById('udAuthBtn').style.display = isAnon ? '' : 'none';
+    document.getElementById('udSignout').style.display = isAnon ? 'none' : '';
+
+    logEvent(analytics, 'login', { method: isAnon ? 'anonymous' : user.providerData[0]?.providerId });
+  } else {
+    // auto sign-in anonymously
+    signInAnonymously(auth).catch(e => console.error('[WARP Auth]', e));
+  }
+});
+
+// ── AUTH FUNCTIONS (exposed to global) ───────────────────
+window.signInWithGoogle = async () => {
+  clearAuthErr();
+  try {
+    const result = await signInWithPopup(auth, googleProvider);
+    const isNew = result._tokenResponse?.isNewUser;
+    logEvent(analytics, isNew ? 'sign_up' : 'login', { method: 'google.com' });
+    closeAuth();
+    showToast(isNew ? '🎉 ברוך הבא ל-WARP!' : '✅ התחברת בהצלחה עם Google!', 'success');
+  } catch(e) { showAuthErr(formatErr(e)); }
+};
+
+window.signInEmail = async () => {
+  clearAuthErr();
+  const email = document.getElementById('loginEmail').value.trim();
+  const pass  = document.getElementById('loginPass').value;
+  if (!email || !pass) return showAuthErr('נא למלא אימייל וסיסמה');
+  setBtn('loginBtn', true);
+  try {
+    await signInWithEmailAndPassword(auth, email, pass);
+    logEvent(analytics, 'login', { method: 'email' });
+    closeAuth();
+    showToast('✅ ברוך הבא!', 'success');
+  } catch(e) { showAuthErr(formatErr(e)); }
+  finally { setBtn('loginBtn', false); }
+};
+
+window.forgotPassword = async () => {
+  const email = document.getElementById('loginEmail').value.trim();
+  if (!email) return showAuthErr('הכנס את האימייל שלך כדי לאפס סיסמה');
+  try {
+    await sendPasswordResetEmail(auth, email);
+    logEvent(analytics, 'forgot_password');
+    showToast('📧 נשלח מייל לאיפוס סיסמה!', 'success');
+    clearAuthErr();
+  } catch(e) { showAuthErr(formatErr(e)); }
+};
+
+window.registerEmail = async () => {
+  clearAuthErr();
+  const name  = document.getElementById('regName').value.trim();
+  const email = document.getElementById('regEmail').value.trim();
+  const pass  = document.getElementById('regPass').value;
+  if (!name || !email || !pass) return showAuthErr('נא למלא את כל השדות');
+  if (pass.length < 6) return showAuthErr('סיסמה חייבת להיות לפחות 6 תווים');
+  setBtn('registerBtn', true);
+  try {
+    const cred = await createUserWithEmailAndPassword(auth, email, pass);
+    await updateProfile(cred.user, { displayName: name });
+    logEvent(analytics, 'sign_up', { method: 'email' });
+    closeAuth();
+    showToast('🎉 החשבון נוצר בהצלחה!', 'success');
+  } catch(e) { showAuthErr(formatErr(e)); }
+  finally { setBtn('registerBtn', false); }
+};
+
+window.continueAnonymously = async () => {
+  if (!auth.currentUser) {
+    await signInAnonymously(auth);
+  }
+  closeAuth();
+  showToast('👤 נכנסת כאורח', 'success');
+};
+
+window.signOutUser = async () => {
+  await signOut(auth);
+  Object.keys(_lsCache).forEach(k => delete _lsCache[k]);
+  closeDropdown();
+  showToast('👋 התנתקת', 'success');
+};
+
+// ── HELPERS ──────────────────────────────────────────────
+function formatErr(e) {
+  const map = {
+    'auth/user-not-found': 'לא נמצא משתמש עם אימייל זה',
+    'auth/wrong-password': 'סיסמה שגויה',
+    'auth/email-already-in-use': 'האימייל כבר בשימוש',
+    'auth/invalid-email': 'אימייל לא תקין',
+    'auth/weak-password': 'הסיסמה חלשה מדי',
+    'auth/popup-closed-by-user': 'חלון ההתחברות נסגר',
+    'auth/invalid-credential': 'פרטי כניסה שגויים',
+  };
+  return map[e.code] || e.message;
+}
+function showAuthErr(msg) {
+  const el = document.getElementById('authErr');
+  el.textContent = msg; el.style.display = '';
+}
+function clearAuthErr() {
+  document.getElementById('authErr').style.display = 'none';
+}
+function setBtn(id, loading) {
+  const el = document.getElementById(id);
+  el.disabled = loading;
+  if (id === 'loginBtn')    el.textContent = loading ? 'מתחבר...' : 'כניסה';
+  if (id === 'registerBtn') el.textContent = loading ? 'יוצר חשבון...' : 'יצירת חשבון';
+}
+
+// Signal that all auth functions are ready
+document.dispatchEvent(new Event('_warpReady'));
+
+</script>
+
+<!-- ==================== APP LOGIC ==================== -->
 <script>
 const JSON_PATH = 'games.json';
 
@@ -236,6 +630,9 @@ function setCat(cat) {
   currentCat = cat;
   document.querySelectorAll('.cat').forEach(b => b.classList.toggle('active', b.dataset.cat === cat));
   render();
+  if (window._firebase) {
+    window._firebase.logEvent(window._firebase.analytics, 'select_category', { category: cat });
+  }
 }
 
 function render() {
@@ -282,29 +679,33 @@ function buildSection(cat, games, override) {
 }
 
 function buildCard(game) {
-  const card = document.createElement('div'); card.className = 'card';
+  const canEmbed = game.embeddable !== false;
+  const card = document.createElement('div');
+  card.className = 'card' + (canEmbed ? '' : ' blocked');
   const cat = (game.categories||[])[0];
   const color = CAT_COLORS[cat]||'#7b2fff';
-
   const thumb = document.createElement('div'); thumb.className = 'card-thumb';
   thumb.style.background = 'linear-gradient(135deg,'+color+'22,'+color+'08)';
-
   if (game.thumbnail) {
     const img = document.createElement('img'); img.src = game.thumbnail; img.alt = game.name;
     img.onerror = () => img.replaceWith(noThumb(game, color));
     thumb.appendChild(img);
   } else { thumb.appendChild(noThumb(game, color)); }
-
   if (game.badge) {
     const b = document.createElement('span');
     b.className = 'badge badge-'+game.badge;
     b.textContent = game.badge==='new'?'✨ חדש':game.badge==='hot'?'🔥 HOT':'👑 TOP';
     thumb.appendChild(b);
   }
+  // embeddable indicator top-left
+  const eb = document.createElement('span');
+  eb.className = 'embed-badge ' + (canEmbed ? 'embed-yes' : 'embed-no');
+  eb.textContent = canEmbed ? '▶ ניתן לשחק' : '↗ טאב חדש';
+  thumb.appendChild(eb);
+  // play overlay
   const ov = document.createElement('div'); ov.className = 'play-ov';
-  ov.innerHTML = '<div class="play-circle">&#9654;</div>';
+  ov.innerHTML = canEmbed ? '<div class="play-circle">▶</div>' : '<div class="play-circle-ext">↗</div>';
   thumb.appendChild(ov);
-
   const body = document.createElement('div'); body.className = 'card-body';
   const nameEl = document.createElement('div'); nameEl.className = 'card-name'; nameEl.textContent = game.name;
   const tagsEl = document.createElement('div'); tagsEl.className = 'card-tags';
@@ -313,7 +714,10 @@ function buildCard(game) {
   });
   body.append(nameEl, tagsEl);
   card.append(thumb, body);
-  card.addEventListener('click', () => openGame(game));
+  card.addEventListener('click', () => {
+    if (canEmbed) { openGame(game); }
+    else { window.open(game.url, '_blank', 'noopener'); }
+  });
   return card;
 }
 
@@ -338,24 +742,73 @@ function openGame(game) {
     s.textContent = t; meta.appendChild(s);
   });
   const iframe = document.getElementById('modalIframe');
-  const err = document.getElementById('modalErr');
+  const err    = document.getElementById('modalErr');
   iframe.style.display=''; err.style.display='none';
   iframe.src = game.url;
   let timer = setTimeout(() => {
-    try { const doc=iframe.contentDocument||iframe.contentWindow?.document; if(!doc||doc.URL==='about:blank') showErr(); } catch{ }
+    try { const doc=iframe.contentDocument||iframe.contentWindow?.document; if(!doc||doc.URL==='about:blank') showErr(); } catch{}
   }, 4500);
-  iframe.onload = () => { clearTimeout(timer); try { const doc=iframe.contentDocument||iframe.contentWindow?.document; if(!doc||doc.body?.innerHTML==='') showErr(); } catch{ } };
+  iframe.onload = () => { clearTimeout(timer); try { const d=iframe.contentDocument||iframe.contentWindow?.document; if(!d||d.body?.innerHTML==='') showErr(); } catch{} };
   iframe.onerror = showErr;
   bg.classList.add('open'); document.body.style.overflow='hidden';
+
+  // analytics
+  if (window._firebase) {
+    window._firebase.logEvent(window._firebase.analytics, 'game_open', { game_id: game.id, game_name: game.name });
+  }
 }
 
 function showErr() { document.getElementById('modalIframe').style.display='none'; document.getElementById('modalErr').style.display='flex'; }
 function closeModal() { document.getElementById('modalBg').classList.remove('open'); document.getElementById('modalIframe').src=''; document.body.style.overflow=''; }
 
+// ── AUTH UI ──────────────────────────────────────────────
+function openAuth() { document.getElementById('authBg').classList.add('open'); closeDropdown(); }
+function closeAuth() { document.getElementById('authBg').classList.remove('open'); }
+function switchTab(tab) {
+  document.getElementById('loginForm').style.display    = tab==='login' ? '' : 'none';
+  document.getElementById('registerForm').style.display = tab==='register' ? '' : 'none';
+  document.getElementById('tabLogin').classList.toggle('active', tab==='login');
+  document.getElementById('tabRegister').classList.toggle('active', tab==='register');
+  document.getElementById('authErr').style.display = 'none';
+}
+function toggleDropdown() {
+  document.getElementById('userDropdown').classList.toggle('open');
+}
+function closeDropdown() {
+  document.getElementById('userDropdown').classList.remove('open');
+}
+
+// ── TOAST ────────────────────────────────────────────────
+function showToast(msg, type='') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show ' + type;
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ── EVENTS ───────────────────────────────────────────────
 document.getElementById('modalClose').addEventListener('click', closeModal);
 document.getElementById('modalBg').addEventListener('click', e => { if(e.target===e.currentTarget) closeModal(); });
-document.addEventListener('keydown', e => { if(e.key==='Escape') closeModal(); });
-document.getElementById('searchInput').addEventListener('input', function(){ currentSearch=this.value; render(); });
+document.getElementById('authBg').addEventListener('click', e => { if(e.target===e.currentTarget) closeAuth(); });
+document.addEventListener('keydown', e => { if(e.key==='Escape') { closeModal(); closeAuth(); } });
+document.addEventListener('click', e => { if(!document.getElementById('userMenu').contains(e.target)) closeDropdown(); });
+document.getElementById('searchInput').addEventListener('input', function(){
+  currentSearch=this.value;
+  render();
+  if (this.value.length > 2 && window._firebase) {
+    clearTimeout(window._searchGA);
+    window._searchGA = setTimeout(() => {
+      window._firebase.logEvent(window._firebase.analytics, 'search', { search_term: this.value });
+    }, 800);
+  }
+});
+
+window.openAuth = openAuth;
+window.closeAuth = closeAuth;
+window.switchTab = switchTab;
+window.toggleDropdown = toggleDropdown;
+window.showToast = showToast;
 
 load();
 </script>

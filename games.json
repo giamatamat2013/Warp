@@ -4,20 +4,9 @@
     "name": "Space Defender",
     "url": "https://giamat13.github.io/space-game/",
     "thumbnail": "",
-    "categories": [
-      "arcade",
-      "action",
-      "shooter"
-    ],
-    "tags": [
-      "חלל",
-      "ספינות",
-      "אסטרואידים",
-      "סקינים",
-      "לוח-שיאים",
-      "single-player",
-      "עברית"
-    ],
+    "embeddable": true,
+    "categories": ["arcade", "action", "shooter"],
+    "tags": ["חלל", "ספינות", "אסטרואידים", "סקינים", "לוח-שיאים", "single-player", "עברית"],
     "description": "ירה באויבים וסלעי חלל, אסוף נקודות ועלה רמות כדי לפתוח ספינות חדשות",
     "badge": "hot"
   },
@@ -26,20 +15,9 @@
     "name": "ארץ עיר אונליין",
     "url": "https://giamat13.github.io/LandAndCityOnline/",
     "thumbnail": "",
-    "categories": [
-      "board",
-      "casual",
-      "multiplayer"
-    ],
-    "tags": [
-      "ארץ-עיר",
-      "מרובה-שחקנים",
-      "מילים",
-      "לממד",
-      "אונליין",
-      "עברית",
-      "חברים"
-    ],
+    "embeddable": true,
+    "categories": ["board", "casual", "multiplayer"],
+    "tags": ["ארץ-עיר", "מרובה-שחקנים", "מילים", "לממד", "אונליין", "עברית", "חברים"],
     "description": "משחק ארץ עיר קלאסי למרובה שחקנים — חינמי, מיידי, בלי הורדה",
     "badge": "new"
   },
@@ -48,20 +26,10 @@
     "name": "אבן נייר מספריים",
     "url": "https://giamatamat2013.github.io/Rock-Paper-Scissors/",
     "thumbnail": "",
-    "categories": [
-      "casual",
-      "arcade"
-    ],
-    "tags": [
-      "אבן-נייר-מספריים",
-      "קלאסי",
-      "single-player",
-      "multiplayer",
-      "מהיר",
-      "סטטיסטיקות",
-      "עברית"
-    ],
+    "embeddable": true,
+    "categories": ["casual", "arcade"],
+    "tags": ["אבן-נייר-מספריים", "קלאסי", "single-player", "multiplayer", "מהיר", "סטטיסטיקות", "עברית"],
     "description": "משחק אבן נייר מספריים נגד המחשב עם מעקב סטטיסטיקות",
     "badge": null
-  }
+  },
 ]
