@@ -358,11 +358,15 @@ import {
 import {
   getFirestore, doc, getDoc, setDoc, deleteDoc, collection, getDocs
 } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+import {
+  getDatabase, ref, get
+} from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
 
 // ── CONFIG ──────────────────────────────────────────────
 const firebaseConfig = {
   apiKey: "AIzaSyAV04ASEGe-b_7UnmNjpOTH7RMwFF-I0O0",
   authDomain: "warp-games.firebaseapp.com",
+  databaseURL: "https://warp-games-default-rtdb.firebaseio.com",
   projectId: "warp-games",
   storageBucket: "warp-games.firebasestorage.app",
   messagingSenderId: "299502091770",
@@ -374,10 +378,11 @@ const app      = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 const auth     = getAuth(app);
 const db       = getFirestore(app);
+const rtdb     = getDatabase(app);
 const googleProvider = new GoogleAuthProvider();
 
 // expose to global so non-module scripts can call them
-window._firebase = { auth, db, analytics, logEvent, googleProvider,
+window._firebase = { auth, db, rtdb, ref, get, analytics, logEvent, googleProvider,
   signInAnonymously, signInWithPopup, createUserWithEmailAndPassword,
   signInWithEmailAndPassword, updateProfile, signOut, sendPasswordResetEmail,
   doc, getDoc, setDoc, deleteDoc, collection, getDocs };
@@ -593,6 +598,10 @@ let allGames = [], currentCat = 'all', currentSearch = '';
 
 async function load() {
   try {
+    // Wait for the Firebase module to finish initialising if needed
+    if (!window._firebase) {
+      await new Promise(res => document.addEventListener('_warpReady', res, { once: true }));
+    }
     const { rtdb, ref, get } = window._firebase;
     const snap = await get(ref(rtdb, 'games'));
     if (!snap.exists()) throw new Error('אין נתונים ב-Realtime Database תחת /games');
