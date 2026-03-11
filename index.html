@@ -201,7 +201,7 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:2rem 1.5
     </a>
     <div class="search">
       <span class="search-ic">🔍</span>
-      <input type="text" id="searchInput" placeholder="חפש משחק, תגית, קטגוריה..." autocomplete="off">
+      <input type="search" id="searchInput" placeholder="חפש משחק, תגית, קטגוריה..." autocomplete="off" name="game-search">
     </div>
     <div class="hdr-right">
       <div id="userMenu" style="position:relative;">
@@ -218,7 +218,7 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:2rem 1.5
           <button class="ud-btn danger" id="udSignout" onclick="signOutUser()" style="display:none">🚪 התנתקות</button>
         </div>
       </div>
-      <button class="btn btn-primary" onclick="openAuth()">🚀 <span>הצטרף חינם</span></button>
+      <button class="btn btn-primary" onclick="openAuth()">🔑 <span>התחברות</span></button>
     </div>
   </div>
 </header>
@@ -574,7 +574,6 @@ function setBtn(id, loading) {
 }
 
 // Signal that all auth functions are ready
-window._warpReady = true;
 document.dispatchEvent(new Event('_warpReady'));
 
 </script>
@@ -601,12 +600,7 @@ async function load() {
   try {
     // Wait for the Firebase module to finish initialising if needed
     if (!window._firebase) {
-      if (window._warpReady) {
-        // event already fired, but _firebase still not set — retry briefly
-        await new Promise(res => setTimeout(res, 50));
-      } else {
-        await new Promise(res => document.addEventListener('_warpReady', res, { once: true }));
-      }
+      await new Promise(res => document.addEventListener('_warpReady', res, { once: true }));
     }
     const { rtdb, ref, get } = window._firebase;
     const snap = await get(ref(rtdb, 'games'));
@@ -656,7 +650,6 @@ function setCat(cat) {
 }
 
 function render() {
-  if (!allGames.length) return;
   const content = document.getElementById('content');
   content.querySelectorAll('.section').forEach(s => s.remove());
   const q = currentSearch.trim().toLowerCase();
