@@ -142,6 +142,19 @@ main{max-width:1300px;margin:0 auto;padding:2rem 1.5rem 5rem;position:relative;z
 .embed-yes{background:rgba(0,230,118,.18);color:#00e676;border:1px solid rgba(0,230,118,.35);}
 .embed-no{background:rgba(255,62,108,.18);color:#ff3e6c;border:1px solid rgba(255,62,108,.35);}
 
+/* SAVES DATA BADGE (on card) */
+.saves-badge{position:absolute;bottom:7px;left:7px;padding:3px 9px;border-radius:50px;font-size:.6rem;font-weight:800;letter-spacing:.3px;backdrop-filter:blur(6px);}
+.saves-yes{background:rgba(0,212,255,.18);color:#00d4ff;border:1px solid rgba(0,212,255,.35);}
+.saves-no{background:rgba(110,113,145,.18);color:#6e7191;border:1px solid rgba(110,113,145,.25);}
+
+/* SAVES DATA ROW in modal */
+.modal-saves{display:flex;align-items:center;gap:6px;padding:6px 14px;font-size:.75rem;font-weight:700;border-top:1px solid var(--border);}
+.modal-saves.yes{color:#00d4ff;}
+.modal-saves.no{color:var(--muted);}
+.modal-saves .saves-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.modal-saves.yes .saves-dot{background:#00d4ff;box-shadow:0 0 6px #00d4ff;}
+.modal-saves.no .saves-dot{background:var(--muted);}
+
 /* BLOCKED CARD OVERLAY */
 .card.blocked .card-thumb::after{content:"";position:absolute;inset:0;background:rgba(0,0,0,.45);pointer-events:none;}
 .card.blocked{opacity:.85;}
@@ -219,7 +232,7 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:2rem 1.5
           <button class="ud-btn danger" id="udSignout" onclick="signOutUser()" style="display:none">🚪 התנתקות</button>
         </div>
       </div>
-      <button class="btn btn-primary" onclick="openAuth()">🔑 <span>התחברות</span></button>
+      <button class="btn btn-primary" id="headerAuthBtn" onclick="openAuth()">🔑 <span>התחברות</span></button>
     </div>
   </div>
 </header>
@@ -254,6 +267,10 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:2rem 1.5
       <span id="modalTitle" class="modal-title"></span>
       <div id="modalMeta" style="display:flex;gap:4px;flex-wrap:wrap;"></div>
       <button class="modal-close" id="modalClose">✕</button>
+    </div>
+    <div class="modal-saves no" id="modalSaves">
+      <div class="saves-dot"></div>
+      <span id="modalSavesText">לא שומר נתונים</span>
     </div>
     <div class="modal-body">
       <iframe id="modalIframe" allowfullscreen></iframe>
@@ -468,6 +485,7 @@ onAuthStateChanged(auth, async user => {
     document.getElementById('udEmail').textContent = isAnon ? 'מצב אורח' : (user.email || '');
     document.getElementById('udAuthBtn').style.display = isAnon ? '' : 'none';
     document.getElementById('udSignout').style.display = isAnon ? 'none' : '';
+    document.getElementById('headerAuthBtn').style.display = isAnon ? '' : 'none';
 
     logEvent(analytics, 'login', { method: isAnon ? 'anonymous' : user.providerData[0]?.providerId });
   } else {
@@ -717,6 +735,11 @@ function buildCard(game) {
   eb.className = 'embed-badge ' + (canEmbed ? 'embed-yes' : 'embed-no');
   eb.textContent = canEmbed ? '▶ ניתן לשחק' : '↗ טאב חדש';
   thumb.appendChild(eb);
+  // saves data badge bottom-left
+  const sb = document.createElement('span');
+  sb.className = 'saves-badge ' + (game.savesData ? 'saves-yes' : 'saves-no');
+  sb.textContent = game.savesData ? '💾 שומר נתונים' : '🚫 לא שומר';
+  thumb.appendChild(sb);
   // play overlay
   const ov = document.createElement('div'); ov.className = 'play-ov';
   ov.innerHTML = canEmbed ? '<div class="play-circle">▶</div>' : '<div class="play-circle-ext">↗</div>';
@@ -756,6 +779,15 @@ function openGame(game) {
     const c = CAT_COLORS[t]; if(c){s.style.borderColor=c;s.style.color=c;}
     s.textContent = t; meta.appendChild(s);
   });
+  const savesRow = document.getElementById('modalSaves');
+  const savesText = document.getElementById('modalSavesText');
+  if (game.savesData) {
+    savesRow.className = 'modal-saves yes';
+    savesText.textContent = 'המשחק שומר את ההתקדמות שלך ☁️';
+  } else {
+    savesRow.className = 'modal-saves no';
+    savesText.textContent = 'המשחק לא שומר נתונים — ההתקדמות תאבד בסגירה';
+  }
   const iframe = document.getElementById('modalIframe');
   const err    = document.getElementById('modalErr');
   iframe.style.display=''; err.style.display='none';
