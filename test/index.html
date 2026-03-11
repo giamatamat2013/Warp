@@ -358,9 +358,6 @@ import {
 import {
   getFirestore, doc, getDoc, setDoc, deleteDoc, collection, getDocs
 } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
-import {
-  getDatabase, ref, get
-} from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
 
 // ── CONFIG ──────────────────────────────────────────────
 const firebaseConfig = {
@@ -370,18 +367,18 @@ const firebaseConfig = {
   storageBucket: "warp-games.firebasestorage.app",
   messagingSenderId: "299502091770",
   appId: "1:299502091770:web:582593b7b31884bfbcf843",
-  measurementId: "G-N3JTRQPYRV"
+  measurementId: "G-N3JTRQPYRV",
+  databaseURL: "https://warp-games-default-rtdb.europe-west1.firebasedatabase.app"
 };
 
 const app      = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 const auth     = getAuth(app);
 const db       = getFirestore(app);
-const rtdb     = getDatabase(app);
 const googleProvider = new GoogleAuthProvider();
 
 // expose to global so non-module scripts can call them
-window._firebase = { auth, db, rtdb, ref, get, analytics, logEvent, googleProvider,
+window._firebase = { auth, db, analytics, logEvent, googleProvider,
   signInAnonymously, signInWithPopup, createUserWithEmailAndPassword,
   signInWithEmailAndPassword, updateProfile, signOut, sendPasswordResetEmail,
   doc, getDoc, setDoc, deleteDoc, collection, getDocs };
@@ -579,6 +576,7 @@ document.dispatchEvent(new Event('_warpReady'));
 
 <!-- ==================== APP LOGIC ==================== -->
 <script>
+const JSON_PATH = 'games.json';
 
 const CAT_LABELS = {
   all:'🎮 הכל', action:'⚡ פעולה', puzzle:'🧩 פאזל',
@@ -596,20 +594,15 @@ let allGames = [], currentCat = 'all', currentSearch = '';
 
 async function load() {
   try {
-    const { rtdb, ref, get } = window._firebase;
-    const snap = await get(ref(rtdb, 'games'));
-    if (!snap.exists()) throw new Error('אין נתונים ב-Realtime Database תחת /games');
-    const val = snap.val();
-    allGames = Array.isArray(val)
-      ? val.filter(Boolean)
-      : Object.values(val);
-    if (!allGames.length) throw new Error('רשימת המשחקים ריקה');
+    const res = await fetch(JSON_PATH);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    allGames = await res.json();
+    if (!Array.isArray(allGames)) throw new Error('games.json חייב להיות מערך');
     init();
   } catch(e) {
     document.getElementById('loadingState').style.display = 'none';
     document.getElementById('errorState').style.display = '';
     document.getElementById('errorMsg').textContent = 'שגיאה: ' + e.message;
-    console.error('[WARP load]', e);
   }
 }
 
@@ -818,12 +811,7 @@ window.switchTab = switchTab;
 window.toggleDropdown = toggleDropdown;
 window.showToast = showToast;
 
-// המתן ל-Firebase module לפני טעינת משחקים מה-RTDB
-if (window._firebase?.rtdb) {
-  load();
-} else {
-  document.addEventListener('_warpReady', () => load(), { once: true });
-}
+load();
 </script>
 </body>
 </html>
