@@ -201,7 +201,7 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:2rem 1.5
     </a>
     <div class="search">
       <span class="search-ic">🔍</span>
-      <input type="text" id="searchInput" placeholder="חפש משחק, תגית, קטגוריה...">
+      <input type="text" id="searchInput" placeholder="חפש משחק, תגית, קטגוריה..." autocomplete="off">
     </div>
     <div class="hdr-right">
       <div id="userMenu" style="position:relative;">
@@ -294,14 +294,14 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:2rem 1.5
     <div id="loginForm">
       <div class="auth-field">
         <label>אימייל</label>
-        <input type="email" id="loginEmail" placeholder="you@example.com">
+        <input type="email" id="loginEmail" placeholder="you@example.com" autocomplete="email">
       </div>
       <div class="auth-field">
         <label style="display:flex;justify-content:space-between;align-items:center;">
           סיסמה
           <button type="button" onclick="forgotPassword()" style="background:none;border:none;color:var(--blue);font-size:.7rem;font-weight:700;cursor:pointer;padding:0;font-family:inherit;">שכחתי סיסמה</button>
         </label>
-        <input type="password" id="loginPass" placeholder="••••••••">
+        <input type="password" id="loginPass" placeholder="••••••••" autocomplete="current-password">
       </div>
       <button class="auth-submit" id="loginBtn" onclick="signInEmail()">כניסה</button>
     </div>
@@ -309,15 +309,15 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:2rem 1.5
     <div id="registerForm" style="display:none">
       <div class="auth-field">
         <label>שם תצוגה</label>
-        <input type="text" id="regName" placeholder="השם שלך">
+        <input type="text" id="regName" placeholder="השם שלך" autocomplete="name">
       </div>
       <div class="auth-field">
         <label>אימייל</label>
-        <input type="email" id="regEmail" placeholder="you@example.com">
+        <input type="email" id="regEmail" placeholder="you@example.com" autocomplete="email">
       </div>
       <div class="auth-field">
         <label>סיסמה</label>
-        <input type="password" id="regPass" placeholder="לפחות 6 תווים">
+        <input type="password" id="regPass" placeholder="לפחות 6 תווים" autocomplete="new-password">
       </div>
       <button class="auth-submit" id="registerBtn" onclick="registerEmail()">יצירת חשבון</button>
     </div>
@@ -367,8 +367,7 @@ const firebaseConfig = {
   storageBucket: "warp-games.firebasestorage.app",
   messagingSenderId: "299502091770",
   appId: "1:299502091770:web:582593b7b31884bfbcf843",
-  measurementId: "G-N3JTRQPYRV",
-  databaseURL: "https://warp-games-default-rtdb.europe-west1.firebasedatabase.app"
+  measurementId: "G-N3JTRQPYRV"
 };
 
 const app      = initializeApp(firebaseConfig);
