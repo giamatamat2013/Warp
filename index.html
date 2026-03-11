@@ -4,6 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>WARP – משחקי חינם</title>
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-N3JTRQPYRV"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-N3JTRQPYRV');
+</script>
 <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;600;700;900&family=Heebo:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -289,7 +297,10 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:2rem 1.5
         <input type="email" id="loginEmail" placeholder="you@example.com">
       </div>
       <div class="auth-field">
-        <label>סיסמה</label>
+        <label style="display:flex;justify-content:space-between;align-items:center;">
+          סיסמה
+          <button type="button" onclick="forgotPassword()" style="background:none;border:none;color:var(--blue);font-size:.7rem;font-weight:700;cursor:pointer;padding:0;font-family:inherit;">שכחתי סיסמה</button>
+        </label>
         <input type="password" id="loginPass" placeholder="••••••••">
       </div>
       <button class="auth-submit" id="loginBtn" onclick="signInEmail()">כניסה</button>
@@ -328,7 +339,7 @@ import {
   getAuth, onAuthStateChanged, signInAnonymously,
   signInWithPopup, GoogleAuthProvider,
   createUserWithEmailAndPassword, signInWithEmailAndPassword,
-  updateProfile, signOut
+  updateProfile, signOut, sendPasswordResetEmail
 } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
 import {
   getFirestore, doc, getDoc, setDoc, deleteDoc, collection, getDocs
@@ -354,8 +365,11 @@ const googleProvider = new GoogleAuthProvider();
 // expose to global so non-module scripts can call them
 window._firebase = { auth, db, analytics, logEvent, googleProvider,
   signInAnonymously, signInWithPopup, createUserWithEmailAndPassword,
-  signInWithEmailAndPassword, updateProfile, signOut,
+  signInWithEmailAndPassword, updateProfile, signOut, sendPasswordResetEmail,
   doc, getDoc, setDoc, deleteDoc, collection, getDocs };
+
+// ── GA: page_view ────────────────────────────────────────
+logEvent(analytics, 'page_view', { page_title: 'WARP Games', page_location: location.href });
 
 // ── CLOUD localStorage PROXY ─────────────────────────────
 // Works like localStorage but syncs every key to Firestore under:
@@ -446,9 +460,11 @@ onAuthStateChanged(auth, async user => {
 window.signInWithGoogle = async () => {
   clearAuthErr();
   try {
-    await signInWithPopup(auth, googleProvider);
+    const result = await signInWithPopup(auth, googleProvider);
+    const isNew = result._tokenResponse?.isNewUser;
+    logEvent(analytics, isNew ? 'sign_up' : 'login', { method: 'google.com' });
     closeAuth();
-    showToast('✅ התחברת בהצלחה עם Google!', 'success');
+    showToast(isNew ? '🎉 ברוך הבא ל-WARP!' : '✅ התחברת בהצלחה עם Google!', 'success');
   } catch(e) { showAuthErr(formatErr(e)); }
 };
 
@@ -460,10 +476,22 @@ window.signInEmail = async () => {
   setBtn('loginBtn', true);
   try {
     await signInWithEmailAndPassword(auth, email, pass);
+    logEvent(analytics, 'login', { method: 'email' });
     closeAuth();
     showToast('✅ ברוך הבא!', 'success');
   } catch(e) { showAuthErr(formatErr(e)); }
   finally { setBtn('loginBtn', false); }
+};
+
+window.forgotPassword = async () => {
+  const email = document.getElementById('loginEmail').value.trim();
+  if (!email) return showAuthErr('הכנס את האימייל שלך כדי לאפס סיסמה');
+  try {
+    await sendPasswordResetEmail(auth, email);
+    logEvent(analytics, 'forgot_password');
+    showToast('📧 נשלח מייל לאיפוס סיסמה!', 'success');
+    clearAuthErr();
+  } catch(e) { showAuthErr(formatErr(e)); }
 };
 
 window.registerEmail = async () => {
@@ -477,6 +505,7 @@ window.registerEmail = async () => {
   try {
     const cred = await createUserWithEmailAndPassword(auth, email, pass);
     await updateProfile(cred.user, { displayName: name });
+    logEvent(analytics, 'sign_up', { method: 'email' });
     closeAuth();
     showToast('🎉 החשבון נוצר בהצלחה!', 'success');
   } catch(e) { showAuthErr(formatErr(e)); }
@@ -584,6 +613,9 @@ function setCat(cat) {
   currentCat = cat;
   document.querySelectorAll('.cat').forEach(b => b.classList.toggle('active', b.dataset.cat === cat));
   render();
+  if (window._firebase) {
+    window._firebase.logEvent(window._firebase.analytics, 'select_category', { category: cat });
+  }
 }
 
 function render() {
@@ -745,7 +777,16 @@ document.getElementById('modalBg').addEventListener('click', e => { if(e.target=
 document.getElementById('authBg').addEventListener('click', e => { if(e.target===e.currentTarget) closeAuth(); });
 document.addEventListener('keydown', e => { if(e.key==='Escape') { closeModal(); closeAuth(); } });
 document.addEventListener('click', e => { if(!document.getElementById('userMenu').contains(e.target)) closeDropdown(); });
-document.getElementById('searchInput').addEventListener('input', function(){ currentSearch=this.value; render(); });
+document.getElementById('searchInput').addEventListener('input', function(){
+  currentSearch=this.value;
+  render();
+  if (this.value.length > 2 && window._firebase) {
+    clearTimeout(window._searchGA);
+    window._searchGA = setTimeout(() => {
+      window._firebase.logEvent(window._firebase.analytics, 'search', { search_term: this.value });
+    }, 800);
+  }
+});
 
 window.openAuth = openAuth;
 window.closeAuth = closeAuth;
