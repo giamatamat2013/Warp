@@ -199,10 +199,11 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:2rem 1.5
       <div class="logo-icon">⚡</div>
       <span class="logo-name">WARP</span>
     </a>
-    <div class="search">
+    <form class="search" autocomplete="off" onsubmit="return false" role="search">
       <span class="search-ic">🔍</span>
-      <input type="search" id="searchInput" placeholder="חפש משחק, תגית, קטגוריה..." autocomplete="off" name="game-search">
-    </div>
+      <input type="email" style="display:none" aria-hidden="true" tabindex="-1">
+      <input type="text" id="searchInput" placeholder="חפש משחק, תגית, קטגוריה..." autocomplete="off" name="search" role="searchbox">
+    </form>
     <div class="hdr-right">
       <div id="userMenu" style="position:relative;">
         <div class="user-avatar" id="userAvatar" onclick="toggleDropdown()">
@@ -807,6 +808,24 @@ document.getElementById('modalBg').addEventListener('click', e => { if(e.target=
 document.getElementById('authBg').addEventListener('click', e => { if(e.target===e.currentTarget) closeAuth(); });
 document.addEventListener('keydown', e => { if(e.key==='Escape') { closeModal(); closeAuth(); } });
 document.addEventListener('click', e => { if(!document.getElementById('userMenu').contains(e.target)) closeDropdown(); });
+const _si = document.getElementById('searchInput');
+console.log('[WARP] searchInput autocomplete attr:', _si.getAttribute('autocomplete'));
+console.log('[WARP] searchInput type:', _si.type);
+_si.addEventListener('focus', function(){
+  console.log('[WARP] search focused — value:', this.value);
+});
+_si.addEventListener('change', function(e){
+  console.log('[WARP] search CHANGE (autocomplete fill?) — value:', this.value, 'inputType:', e.inputType);
+  // Chrome autofill sets inputType to undefined — clear it
+  if (e.inputType === undefined && this.value.includes('@')) {
+    console.log('[WARP] Detected email autofill — clearing');
+    this.value = '';
+  }
+});
+_si.addEventListener('animationstart', function(e){
+  // Chrome fires this on autofill
+  console.log('[WARP] animationstart on search (autofill?) — name:', e.animationName, 'value:', this.value);
+});
 document.getElementById('searchInput').addEventListener('input', function(){
   currentSearch=this.value;
   render();
