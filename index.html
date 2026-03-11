@@ -292,7 +292,7 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:2rem 1.5
 
     <div id="authErr" class="auth-err"></div>
 
-    <div id="loginForm">
+    <form id="loginForm" onsubmit="signInEmail();return false;" autocomplete="on">
       <div class="auth-field">
         <label>אימייל</label>
         <input type="email" id="loginEmail" placeholder="you@example.com" autocomplete="email">
@@ -304,10 +304,10 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:2rem 1.5
         </label>
         <input type="password" id="loginPass" placeholder="••••••••" autocomplete="current-password">
       </div>
-      <button class="auth-submit" id="loginBtn" onclick="signInEmail()">כניסה</button>
-    </div>
+      <button type="submit" class="auth-submit" id="loginBtn">כניסה</button>
+    </form>
 
-    <div id="registerForm" style="display:none">
+    <form id="registerForm" style="display:none" onsubmit="registerEmail();return false;" autocomplete="on">
       <div class="auth-field">
         <label>שם תצוגה</label>
         <input type="text" id="regName" placeholder="השם שלך" autocomplete="name">
@@ -320,8 +320,8 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:2rem 1.5
         <label>סיסמה</label>
         <input type="password" id="regPass" placeholder="לפחות 6 תווים" autocomplete="new-password">
       </div>
-      <button class="auth-submit" id="registerBtn" onclick="registerEmail()">יצירת חשבון</button>
-    </div>
+      <button type="submit" class="auth-submit" id="registerBtn">יצירת חשבון</button>
+    </form>
   </div>
 </div>
 
@@ -808,24 +808,6 @@ document.getElementById('modalBg').addEventListener('click', e => { if(e.target=
 document.getElementById('authBg').addEventListener('click', e => { if(e.target===e.currentTarget) closeAuth(); });
 document.addEventListener('keydown', e => { if(e.key==='Escape') { closeModal(); closeAuth(); } });
 document.addEventListener('click', e => { if(!document.getElementById('userMenu').contains(e.target)) closeDropdown(); });
-const _si = document.getElementById('searchInput');
-console.log('[WARP] searchInput autocomplete attr:', _si.getAttribute('autocomplete'));
-console.log('[WARP] searchInput type:', _si.type);
-_si.addEventListener('focus', function(){
-  console.log('[WARP] search focused — value:', this.value);
-});
-_si.addEventListener('change', function(e){
-  console.log('[WARP] search CHANGE (autocomplete fill?) — value:', this.value, 'inputType:', e.inputType);
-  // Chrome autofill sets inputType to undefined — clear it
-  if (e.inputType === undefined && this.value.includes('@')) {
-    console.log('[WARP] Detected email autofill — clearing');
-    this.value = '';
-  }
-});
-_si.addEventListener('animationstart', function(e){
-  // Chrome fires this on autofill
-  console.log('[WARP] animationstart on search (autofill?) — name:', e.animationName, 'value:', this.value);
-});
 document.getElementById('searchInput').addEventListener('input', function(){
   currentSearch=this.value;
   render();
