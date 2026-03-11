@@ -575,7 +575,7 @@ document.dispatchEvent(new Event('_warpReady'));
 
 <!-- ==================== APP LOGIC ==================== -->
 <script>
-const JSON_PATH = 'games.json';
+
 
 const CAT_LABELS = {
   all:'🎮 הכל', action:'⚡ פעולה', puzzle:'🧩 פאזל',
@@ -593,15 +593,20 @@ let allGames = [], currentCat = 'all', currentSearch = '';
 
 async function load() {
   try {
-    const res = await fetch(JSON_PATH);
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-    allGames = await res.json();
-    if (!Array.isArray(allGames)) throw new Error('games.json חייב להיות מערך');
+    const { rtdb, ref, get } = window._firebase;
+    const snap = await get(ref(rtdb, 'games'));
+    if (!snap.exists()) throw new Error('אין נתונים ב-Realtime Database תחת /games');
+    const val = snap.val();
+    allGames = Array.isArray(val)
+      ? val.filter(Boolean)
+      : Object.values(val);
+    if (!allGames.length) throw new Error('רשימת המשחקים ריקה');
     init();
   } catch(e) {
     document.getElementById('loadingState').style.display = 'none';
     document.getElementById('errorState').style.display = '';
     document.getElementById('errorMsg').textContent = 'שגיאה: ' + e.message;
+    console.error('[WARP load]', e);
   }
 }
 
