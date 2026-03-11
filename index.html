@@ -128,6 +128,19 @@ main{max-width:1300px;margin:0 auto;padding:2rem 1.5rem 5rem;position:relative;z
 .badge-new{background:var(--accent);color:#fff;}
 .badge-hot{background:linear-gradient(135deg,#ff6b00,var(--gold));color:#000;}
 .badge-top{background:linear-gradient(135deg,var(--purple),var(--blue));color:#fff;}
+
+/* EMBEDDABLE BADGE */
+.embed-badge{position:absolute;top:7px;left:7px;padding:3px 9px;border-radius:50px;font-size:.6rem;font-weight:800;letter-spacing:.3px;display:flex;align-items:center;gap:4px;backdrop-filter:blur(6px);}
+.embed-yes{background:rgba(0,230,118,.18);color:#00e676;border:1px solid rgba(0,230,118,.35);}
+.embed-no{background:rgba(255,62,108,.18);color:#ff3e6c;border:1px solid rgba(255,62,108,.35);}
+
+/* BLOCKED CARD OVERLAY */
+.card.blocked .card-thumb::after{content:"";position:absolute;inset:0;background:rgba(0,0,0,.45);pointer-events:none;}
+.card.blocked{opacity:.85;}
+.card.blocked:hover{border-color:rgba(255,62,108,.5);box-shadow:0 16px 40px rgba(0,0,0,.45),0 0 0 1px rgba(255,62,108,.5),0 0 30px rgba(255,62,108,.12);}
+.play-circle-ext{width:46px;height:46px;border-radius:50%;background:rgba(255,255,255,.12);border:2px solid rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center;font-size:1rem;color:#fff;transform:scale(.8);transition:var(--t);}
+.card:hover .play-circle-ext{transform:scale(1);}
+
 .card-body{padding:10px 12px 12px;}
 .card-name{font-size:.85rem;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:6px;}
 .card-tags{display:flex;gap:4px;flex-wrap:wrap;}
@@ -617,7 +630,9 @@ function buildSection(cat, games, override) {
 }
 
 function buildCard(game) {
-  const card = document.createElement('div'); card.className = 'card';
+  const canEmbed = game.embeddable !== false;
+  const card = document.createElement('div');
+  card.className = 'card' + (canEmbed ? '' : ' blocked');
   const cat = (game.categories||[])[0];
   const color = CAT_COLORS[cat]||'#7b2fff';
   const thumb = document.createElement('div'); thumb.className = 'card-thumb';
@@ -633,8 +648,14 @@ function buildCard(game) {
     b.textContent = game.badge==='new'?'✨ חדש':game.badge==='hot'?'🔥 HOT':'👑 TOP';
     thumb.appendChild(b);
   }
+  // embeddable indicator top-left
+  const eb = document.createElement('span');
+  eb.className = 'embed-badge ' + (canEmbed ? 'embed-yes' : 'embed-no');
+  eb.textContent = canEmbed ? '▶ ניתן לשחק' : '↗ טאב חדש';
+  thumb.appendChild(eb);
+  // play overlay
   const ov = document.createElement('div'); ov.className = 'play-ov';
-  ov.innerHTML = '<div class="play-circle">▶</div>';
+  ov.innerHTML = canEmbed ? '<div class="play-circle">▶</div>' : '<div class="play-circle-ext">↗</div>';
   thumb.appendChild(ov);
   const body = document.createElement('div'); body.className = 'card-body';
   const nameEl = document.createElement('div'); nameEl.className = 'card-name'; nameEl.textContent = game.name;
@@ -644,7 +665,10 @@ function buildCard(game) {
   });
   body.append(nameEl, tagsEl);
   card.append(thumb, body);
-  card.addEventListener('click', () => openGame(game));
+  card.addEventListener('click', () => {
+    if (canEmbed) { openGame(game); }
+    else { window.open(game.url, '_blank', 'noopener'); }
+  });
   return card;
 }
 
