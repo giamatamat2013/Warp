@@ -752,6 +752,12 @@ function buildCard(game) {
   sb.className = 'saves-badge ' + (game.savesData ? 'saves-yes' : 'saves-no');
   sb.textContent = game.savesData ? '💾 שומר נתונים' : '🚫 לא שומר';
   thumb.appendChild(sb);
+  // platform badge bottom-right
+  const plat = game.platform || ['desktop', 'mobile'];
+  const pb = document.createElement('span');
+  pb.className = 'plat-badge';
+  pb.textContent = plat.includes('desktop') && plat.includes('mobile') ? '🖥️📱' : plat.includes('mobile') ? '📱 נייד' : '🖥️ מחשב';
+  thumb.appendChild(pb);
   // play overlay
   const ov = document.createElement('div'); ov.className = 'play-ov';
   ov.innerHTML = canEmbed ? '<div class="play-circle">▶</div>' : '<div class="play-circle-ext">↗</div>';
@@ -793,12 +799,14 @@ function openGame(game) {
   });
   const savesRow = document.getElementById('modalSaves');
   const savesText = document.getElementById('modalSavesText');
+  const isLoggedIn = window._currentUser && !window._currentUser.isAnonymous;
+  savesRow.style.display = isLoggedIn ? '' : 'none';
   if (game.savesData) {
     savesRow.className = 'modal-saves yes';
-    savesText.textContent = 'המשחק שומר את ההתקדמות שלך ☁️';
+    savesText.textContent = 'ההתקדמות שלך נשמרת בענן ☁️';
   } else {
     savesRow.className = 'modal-saves no';
-    savesText.textContent = 'המשחק לא שומר נתונים — ההתקדמות תאבד בסגירה';
+    savesText.textContent = 'ההתקדמות נשמרת במכשיר בלבד — לא מסונכרן בין מכשירים';
   }
   const iframe = document.getElementById('modalIframe');
   const err    = document.getElementById('modalErr');
