@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="he">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Warp games children</title>
+  <link rel="icon" type="image/png" href="warp-icon.png">
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #00bfff;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+      direction: rtl;
+      overflow-x: hidden;
+    }
+
+    h1, h2 {
+      color: white;
+      text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+    }
+
+    #gamesList {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 30px;
+      padding: 20px;
+      max-width: 1200px;
+      margin: auto;
+    }
+
+    .game-card {
+      background-color: #ffffff;
+      border-radius: 20px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+      overflow: hidden;
+      width: 220px;
+      padding: 15px;
+      position: relative;
+      transition: transform 0.3s;
+      cursor: grab;
+    }
+
+    .game-card:hover {
+      transform: scale(1.05);
+    }
+
+    .game-card img {
+      width: 100%;
+      border-radius: 15px;
+    }
+
+    .game-card h3 {
+      margin: 10px 0;
+      font-size: 20px;
+    }
+
+    .play-button {
+      background: linear-gradient(90deg, #ff8a00, #e52e71);
+      color: white;
+      padding: 10px 20px;
+      border-radius: 25px;
+      font-weight: bold;
+      display: inline-block;
+      transition: 0.3s;
+    }
+
+    .play-button:hover {
+      background: linear-gradient(90deg, #e52e71, #ff8a00);
+    }
+
+    .edit-button {
+      background-color: white;
+      color: #00bfff;
+      border: 2px solid #fff;
+      padding: 10px 20px;
+      border-radius: 30px;
+      font-size: 16px;
+      margin: 20px;
+      cursor: pointer;
+    }
+
+    .delete-btn {
+      position: absolute;
+      top: 5px;
+      left: 5px;
+      background-color: red;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 25px;
+      height: 25px;
+      font-weight: bold;
+      display: none;
+    }
+
+    .drag-handle {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      font-size: 20px;
+      cursor: grab;
+      display: none;
+    }
+
+    .game-card.editing .delete-btn,
+    .game-card.editing .drag-handle {
+      display: block;
+    }
+
+    #addGameForm {
+      display: none;
+      margin: 20px auto;
+      background: white;
+      padding: 20px;
+      border-radius: 15px;
+      width: 300px;
+      text-align: right;
+    }
+
+    input, label {
+      display: block;
+      margin: 10px 0;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    #authBox {
+      display: none;
+      background: white;
+      padding: 20px;
+      border-radius: 15px;
+      width: 300px;
+      margin: 30px auto;
+    }
+
+    .auth-btns {
+      margin-top: 10px;
+    }
+
+    .auth-btns button {
+      margin-left: 10px;
+    }
+
+    .shape {
+      position: fixed;
+      z-index: 0;
+      opacity: 0.2;
+      animation: float 20s infinite linear;
+    }
+
+    @keyframes float {
+      0% {
+        transform: translateY(100vh) rotate(0deg);
+      }
+      100% {
+        transform: translateY(-100vh) rotate(360deg);
+      }
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: transparent;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    #gamesList, #addGameForm, #authBox, h1, h2, .edit-button {
+      position: relative;
+      z-index: 1;
+    }
+  </style>
+</head>
+<body>
+  <h1>ברוך הבא ל-Warp!</h1>
+  <h2>בחר משחק לשחק</h2>
+
+  <div id="gamesList"></div>
+
+  <button class="edit-button" onclick="startAuth()">ערוך משחקים *להורים בלבד*</button>
+
+  <div id="authBox">
+    <p>כדי להיכנס למצב עריכה, הקלד את המילה:</p>
+    <strong id="authWord" style="font-size: 20px;">Banana</strong>
+    <input type="text" id="authInput" placeholder="הקלד כאן">
+    <div class="auth-btns">
+      <button onclick="checkAuth()">אישור</button>
+      <button onclick="cancelAuth()">ביטול</button>
+    </div>
+  </div>
+
+  <div id="addGameForm">
+    <h3>צור משחק חדש</h3>
+    <label>שם המשחק:</label>
+    <input type="text" id="newGameName">
+    <label>תמונה (PNG או JPG):</label>
+    <input type="file" id="newGameImage" accept=".png,.jpg,.jpeg">
+    <label>קובץ HTML של המשחק:</label>
+    <input type="file" id="newGameHTML" accept=".html">
+    <label>או כתובת URL של המשחק:</label>
+    <input type="url" id="newGameURL" placeholder="https://example.com/game.html">
+    <button onclick="addGame()">שמור משחק</button>
+    <button onclick="exitEditMode()">סיום עריכה</button>
+  </div>
+
+  <script>
+    const shapes = ['circle', 'square', 'triangle'];
+    for (let i = 0; i < 20; i++) {
+      const shape = document.createElement('div');
+      const size = Math.random() * 50 + 10;
+      shape.className = 'shape';
+      shape.style.width = `${size}px`;
+      shape.style.height = `${size}px`;
+      shape.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+      shape.style.backgroundColor = `hsl(${Math.random() * 360}, 80%, 60%)`;
+      shape.style.left = `${Math.random() * 100}%`;
+      shape.style.top = `${Math.random() * 100}vh`;
+      shape.style.animationDuration = `${10 + Math.random() * 20}s`;
+      document.body.appendChild(shape);
+    }
+
+    let games = JSON.parse(localStorage.getItem("games") || "[]");
+    let editingMode = false;
+    const wordList = ["Banana", "Elephant", "Zebra", "Chocolate", "Rainbow", "Sunshine", "Giraffe"];
+    let selectedWord = "";
+
+    function startAuth() {
+      selectedWord = wordList[Math.floor(Math.random() * wordList.length)];
+      document.getElementById("authWord").innerText = selectedWord;
+      document.getElementById("authInput").value = "";
+      document.getElementById("authBox").style.display = "block";
+    }
+
+    function checkAuth() {
+      const typed = document.getElementById("authInput").value;
+      if (typed === selectedWord) {
+        document.getElementById("authBox").style.display = "none";
+        document.getElementById("addGameForm").style.display = "block";
+        editingMode = true;
+        renderGames();
+      } else {
+        alert("המילה לא נכונה. נסה שוב.");
+      }
+    }
+
+    function cancelAuth() {
+      document.getElementById("authBox").style.display = "none";
+    }
+
+    function renderGames() {
+      const gamesList = document.getElementById("gamesList");
+      gamesList.innerHTML = "";
+
+      games.forEach((game, index) => {
+        const gameCard = document.createElement("div");
+        gameCard.className = "game-card" + (editingMode ? " editing" : "");
+        gameCard.draggable = editingMode;
+        gameCard.ondragstart = (e) => e.dataTransfer.setData("index", index);
+        gameCard.ondragover = (e) => e.preventDefault();
+        gameCard.ondrop = (e) => {
+          const from = e.dataTransfer.getData("index");
+          const to = index;
+          const item = games.splice(from, 1)[0];
+          games.splice(to, 0, item);
+          localStorage.setItem("games", JSON.stringify(games));
+          renderGames();
+        };
+
+        gameCard.innerHTML = `
+          <button class="delete-btn" onclick="confirmDelete(${index})">×</button>
+          <div class="drag-handle">☰</div>
+          <img src="${game.image}" alt="${game.title}">
+          <h3>${game.title}</h3>
+          <a href="${game.html}" target="_blank">
+            <div class="play-button">שחק עכשיו</div>
+          </a>
+        `;
+        gamesList.appendChild(gameCard);
+      });
+    }
+
+    function confirmDelete(index) {
+      if (confirm(`האם אתה בטוח שאתה רוצה למחוק את המשחק "${games[index].title}"?`)) {
+        games.splice(index, 1);
+        localStorage.setItem("games", JSON.stringify(games));
+        renderGames();
+      }
+    }
+
+    function addGame() {
+      const name = document.getElementById("newGameName").value.trim();
+      const htmlFile = document.getElementById("newGameHTML").files[0];
+      const htmlUrlInput = document.getElementById("newGameURL").value.trim();
+      const imageFile = document.getElementById("newGameImage").files[0];
+
+      if (!name || (!htmlFile && !htmlUrlInput) || !imageFile) {
+        alert("אנא מלא את כל הפרטים: שם, תמונה וקובץ או קישור.");
+        return;
+      }
+
+      const readerImage = new FileReader();
+      readerImage.onload = function () {
+        const imageUrl = readerImage.result;
+
+        if (htmlFile) {
+          const readerHTML = new FileReader();
+          readerHTML.onload = function () {
+            const htmlUrl = readerHTML.result;
+
+            const game = {
+              name,
+              title: name,
+              image: imageUrl,
+              html: htmlUrl
+            };
+
+            games.push(game);
+            localStorage.setItem("games", JSON.stringify(games));
+            renderGames();
+          };
+          readerHTML.readAsDataURL(htmlFile);
+        } else {
+          const game = {
+            name,
+            title: name,
+            image: imageUrl,
+            html: htmlUrlInput
+          };
+
+          games.push(game);
+          localStorage.setItem("games", JSON.stringify(games));
+          renderGames();
+        }
+      };
+
+      readerImage.readAsDataURL(imageFile);
+    }
+
+    function exitEditMode() {
+      editingMode = false;
+      document.getElementById("addGameForm").style.display = "none";
+      renderGames();
+    }
+
+    window.onload = function () {
+      renderGames();
+    };
+  </script>
+</body>
+</html>
