@@ -32,15 +32,4 @@
     "description": "משחק אבן נייר מספריים נגד המחשב עם מעקב סטטיסטיקות",
     "badge": null
   },
-  {
-    "id": "example-blocked",
-    "name": "דוגמה — משחק חיצוני",
-    "url": "https://store.steampowered.com",
-    "thumbnail": "",
-    "embeddable": false,
-    "categories": ["casual"],
-    "tags": ["חיצוני", "דוגמה"],
-    "description": "דוגמה למשחק שחוסם הטמעה — נפתח בטאב חדש",
-    "badge": null
-  }
 ]
