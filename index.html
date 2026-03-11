@@ -331,6 +331,20 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:2rem 1.5
   © 2025 WARP — כל המשחקים בחינם, בדפדפן, בלי הורדות.
 </footer>
 
+<!-- ==================== EARLY STUBS: prevent "not defined" errors before module loads ==================== -->
+<script>
+// These stubs ensure onclick= attributes don't throw before the Firebase module initialises.
+// The real implementations override them once the module is ready.
+['openAuth','closeAuth','switchTab','toggleDropdown','signInWithGoogle',
+ 'signInEmail','registerEmail','continueAnonymously','signOutUser','forgotPassword'
+].forEach(fn => {
+  if (!window[fn]) window[fn] = (...args) => {
+    // Queue the call until the real function is ready
+    document.addEventListener('_warpReady', () => window[fn](...args), { once: true });
+  };
+});
+</script>
+
 <!-- ==================== FIREBASE SDK ==================== -->
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
@@ -554,6 +568,9 @@ function setBtn(id, loading) {
   if (id === 'registerBtn') el.textContent = loading ? 'יוצר חשבון...' : 'יצירת חשבון';
 }
 
+// Signal that all auth functions are ready
+document.dispatchEvent(new Event('_warpReady'));
+
 </script>
 
 <!-- ==================== APP LOGIC ==================== -->
@@ -769,7 +786,6 @@ function showToast(msg, type='') {
   clearTimeout(t._timer);
   t._timer = setTimeout(() => t.classList.remove('show'), 3000);
 }
-window.showToast = showToast;
 
 // ── EVENTS ───────────────────────────────────────────────
 document.getElementById('modalClose').addEventListener('click', closeModal);
@@ -792,6 +808,7 @@ window.openAuth = openAuth;
 window.closeAuth = closeAuth;
 window.switchTab = switchTab;
 window.toggleDropdown = toggleDropdown;
+window.showToast = showToast;
 
 load();
 </script>
