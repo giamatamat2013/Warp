@@ -147,6 +147,9 @@ main{max-width:1300px;margin:0 auto;padding:2rem 1.5rem 5rem;position:relative;z
 .saves-yes{background:rgba(0,212,255,.18);color:#00d4ff;border:1px solid rgba(0,212,255,.35);}
 .saves-no{background:rgba(110,113,145,.18);color:#6e7191;border:1px solid rgba(110,113,145,.25);}
 
+/* PLATFORM BADGE (on card) */
+.plat-badge{position:absolute;bottom:7px;right:7px;padding:3px 9px;border-radius:50px;font-size:.6rem;font-weight:800;letter-spacing:.3px;backdrop-filter:blur(6px);background:rgba(255,204,0,.15);color:#ffcc00;border:1px solid rgba(255,204,0,.3);}
+
 /* SAVES DATA ROW in modal */
 .modal-saves{display:flex;align-items:center;gap:6px;padding:6px 14px;font-size:.75rem;font-weight:700;border-top:1px solid var(--border);}
 .modal-saves.yes{color:#00d4ff;}
@@ -668,11 +671,20 @@ function setCat(cat) {
   }
 }
 
+function isMobile() {
+  return /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent) || window.innerWidth < 768;
+}
+
 function render() {
   const content = document.getElementById('content');
   content.querySelectorAll('.section').forEach(s => s.remove());
   const q = currentSearch.trim().toLowerCase();
+  const mobile = isMobile();
   let games = allGames.filter(g => {
+    // platform filter
+    const plat = g.platform || ['desktop', 'mobile'];
+    if (mobile && !plat.includes('mobile')) return false;
+    if (!mobile && !plat.includes('desktop')) return false;
     if (currentCat !== 'all' && !(g.categories||[]).includes(currentCat)) return false;
     if (!q) return true;
     return g.name.toLowerCase().includes(q) ||
