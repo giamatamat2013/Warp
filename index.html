@@ -3,8 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="icon" type="image/png" href="icon.png">
-<title>WARP</title>
+<title>WARP – משחקי חינם</title>
 <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;600;700;900&family=Heebo:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -88,15 +87,15 @@ main{max-width:1300px;margin:0 auto;padding:2rem 1.5rem 5rem;position:relative;z
 .tag{font-size:.62rem;font-weight:600;background:var(--bg3);color:var(--muted);padding:2px 8px;border-radius:50px;border:1px solid var(--border);}
 
 /* MODAL */
-.modal-bg{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.88);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;padding:1.5rem;}
+.modal-bg{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.92);backdrop-filter:blur(8px);display:none;align-items:stretch;justify-content:center;padding:0;}
 .modal-bg.open{display:flex;}
-.modal{background:var(--bg2);border:1px solid rgba(123,47,255,.3);border-radius:20px;width:100%;max-width:960px;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.7);animation:modalIn .25s ease;}
+.modal{background:var(--bg2);border-left:1px solid rgba(123,47,255,.25);border-right:1px solid rgba(123,47,255,.25);width:100%;max-width:1100px;margin:0 auto;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 0 80px rgba(0,0,0,.8);animation:modalIn .25s ease;height:100vh;}
 @keyframes modalIn{from{opacity:0;transform:scale(.94) translateY(16px);}to{opacity:1;transform:scale(1) translateY(0);}}
 .modal-hdr{display:flex;align-items:center;gap:.75rem;padding:.9rem 1.25rem;border-bottom:1px solid var(--border);background:var(--bg3);flex-wrap:wrap;}
 .modal-title{font-size:.95rem;font-weight:800;flex:1;}
 .modal-close{width:32px;height:32px;border-radius:8px;background:var(--card);border:1px solid var(--border);color:var(--muted);font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:var(--t);flex-shrink:0;}
 .modal-close:hover{background:rgba(255,62,108,.15);color:var(--accent);border-color:var(--accent);}
-.modal-body{position:relative;padding-bottom:56.25%;}
+.modal-body{position:relative;flex:1;min-height:0;}
 .modal-body iframe{position:absolute;inset:0;width:100%;height:100%;border:none;}
 .modal-err{position:absolute;inset:0;flex-direction:column;align-items:center;justify-content:center;gap:.75rem;color:var(--muted);font-size:.88rem;text-align:center;padding:2rem;display:none;}
 .modal-err .ico{font-size:2.5rem;}
@@ -114,8 +113,7 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:2rem 1.5
   .hdr{padding:0 1rem;}
   .btn span{display:none;}
   .grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr));}
-  .modal-bg{padding:.5rem;}
-  .modal{border-radius:14px;}
+  .modal{border-radius:0;}
 }
 </style>
 </head>
