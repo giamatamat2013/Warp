@@ -554,6 +554,17 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:2rem 1.5
         <input type="text" id="eg_tags" placeholder="כיפי, קלאסי, multiplayer">
       </div>
       <div class="auth-field">
+        <label>טווח גילאים מתאים</label>
+        <div style="display:flex;align-items:center;gap:8px;margin-top:4px;">
+          <input type="number" id="eg_age_from" min="0" max="100" placeholder="0" value="0"
+                 style="flex:1;padding:9px 10px;background:var(--bg3);border:1.5px solid var(--border);border-radius:10px;color:var(--text);font-family:inherit;font-size:.88rem;outline:none;text-align:center;">
+          <span style="color:var(--muted);font-size:.8rem;flex-shrink:0;">עד</span>
+          <input type="number" id="eg_age_to" min="0" max="100" placeholder="100" value="100"
+                 style="flex:1;padding:9px 10px;background:var(--bg3);border:1.5px solid var(--border);border-radius:10px;color:var(--text);font-family:inherit;font-size:.88rem;outline:none;text-align:center;">
+        </div>
+        <div style="font-size:.7rem;color:var(--muted);margin-top:4px;">למי המשחק הכי מעניין ומתאים (0–100)</div>
+      </div>
+      <div class="auth-field">
         <label>קטגוריות</label>
         <div id="eg_cats_wrap" style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:4px;">
           <label style="font-size:.78rem;font-weight:600;color:var(--text);display:flex;align-items:center;gap:6px;cursor:pointer;background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:6px 8px;transition:var(--t);" onmouseover="this.style.borderColor='var(--purple)'" onmouseout="this.style.borderColor='var(--border)'"><input type="checkbox" value="action" style="flex-shrink:0;accent-color:var(--purple);width:14px;height:14px;"> ⚡ פעולה</label>
@@ -576,6 +587,13 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:2rem 1.5
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:4px;">
           <label style="font-size:.78rem;font-weight:600;color:var(--text);display:flex;align-items:center;gap:6px;cursor:pointer;background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:6px 8px;transition:var(--t);" onmouseover="this.style.borderColor='var(--purple)'" onmouseout="this.style.borderColor='var(--border)'"><input type="checkbox" value="desktop" id="eg_plat_desktop" style="flex-shrink:0;accent-color:var(--purple);width:14px;height:14px;"> 🖥️ מחשב</label>
           <label style="font-size:.78rem;font-weight:600;color:var(--text);display:flex;align-items:center;gap:6px;cursor:pointer;background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:6px 8px;transition:var(--t);" onmouseover="this.style.borderColor='var(--purple)'" onmouseout="this.style.borderColor='var(--border)'"><input type="checkbox" value="mobile" id="eg_plat_mobile" style="flex-shrink:0;accent-color:var(--purple);width:14px;height:14px;"> 📱 נייד</label>
+        </div>
+      </div>
+      <div class="auth-field">
+        <label>הגדרות נוספות</label>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:4px;">
+          <label style="font-size:.78rem;font-weight:600;color:var(--text);display:flex;align-items:center;gap:6px;cursor:pointer;background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:6px 8px;transition:var(--t);" onmouseover="this.style.borderColor='var(--purple)'" onmouseout="this.style.borderColor='var(--border)'"><input type="checkbox" id="eg_embeddable" style="flex-shrink:0;accent-color:var(--purple);width:14px;height:14px;"> ▶ ניתן להטמעה</label>
+          <label style="font-size:.78rem;font-weight:600;color:var(--text);display:flex;align-items:center;gap:6px;cursor:pointer;background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:6px 8px;transition:var(--t);" onmouseover="this.style.borderColor='var(--purple)'" onmouseout="this.style.borderColor='var(--border)'"><input type="checkbox" id="eg_saves_data" style="flex-shrink:0;accent-color:var(--purple);width:14px;height:14px;"> 💾 שומר נתונים</label>
         </div>
       </div>
       <div class="auth-field" style="background:rgba(255,62,108,.06);border:1px solid rgba(255,62,108,.2);border-radius:10px;padding:10px 14px;">
@@ -1431,13 +1449,22 @@ function openEditGame(game) {
   document.getElementById('eg_tags').value    = (game.tags||[]).join(', ');
   document.getElementById('eg_reason').value  = '';
   document.getElementById('eg_delete').checked = false;
+  // age
+  const ageParts = (game.age || 'all') === 'all' ? ['0','100'] : String(game.age).split('-');
+  document.getElementById('eg_age_from').value = ageParts[0] || '0';
+  document.getElementById('eg_age_to').value   = ageParts[1] || '100';
   // platform
   document.getElementById('eg_plat_desktop').checked = (game.platform||['desktop']).includes('desktop');
   document.getElementById('eg_plat_mobile').checked  = (game.platform||['mobile']).includes('mobile');
+  // savesData + embeddable
+  document.getElementById('eg_saves_data').checked = game.savesData === true;
+  document.getElementById('eg_embeddable').checked  = game.embeddable !== false;
   // cats
   document.querySelectorAll('#eg_cats_wrap input[type=checkbox]').forEach(cb => {
     cb.checked = (game.categories||[]).includes(cb.value);
   });
+  // store original for diff detection
+  window._editingGame = game;
   document.getElementById('editGameBg').classList.add('open');
 }
 
@@ -1446,19 +1473,22 @@ function closeEditGame() {
 }
 
 async function submitEdit() {
-  const gameId  = document.getElementById('eg_id').value;
+  const gameId   = document.getElementById('eg_id').value;
   const isDelete = document.getElementById('eg_delete').checked;
-  const btn = document.getElementById('submitEditBtn');
-  const errEl = document.getElementById('editGameErr');
+  const btn      = document.getElementById('submitEditBtn');
+  const errEl    = document.getElementById('editGameErr');
+  const orig     = window._editingGame || {};
 
   const user = window._currentUser;
   if (!user || user.isAnonymous) {
     errEl.textContent = 'יש להתחבר כדי לשלוח עריכה';
-    errEl.style.display = '';
-    return;
+    errEl.style.display = ''; return;
   }
 
+  // changes: only fields that actually differ from original
   const changes = {};
+  const originals = {}; // original values for admin diff display
+
   if (!isDelete) {
     const name  = document.getElementById('eg_name').value.trim();
     const url   = document.getElementById('eg_url').value.trim();
@@ -1470,17 +1500,32 @@ async function submitEdit() {
     const platform = [];
     if (document.getElementById('eg_plat_desktop').checked) platform.push('desktop');
     if (document.getElementById('eg_plat_mobile').checked) platform.push('mobile');
+    const ageFrom = parseInt(document.getElementById('eg_age_from').value) || 0;
+    const ageTo   = parseInt(document.getElementById('eg_age_to').value) || 100;
+    const age     = ageFrom === 0 && ageTo === 100 ? 'all' : `${ageFrom}-${ageTo}`;
 
     if (!name) { errEl.textContent = 'שם המשחק חובה'; errEl.style.display=''; return; }
     if (!categories.length) { errEl.textContent = 'בחר לפחות קטגוריה אחת'; errEl.style.display=''; return; }
 
-    changes.name = name;
-    if (url) changes.url = url;
-    if (thumb) changes.thumbnail = thumb;
-    if (desc) changes.description = desc;
-    changes.tags = tags;
-    changes.categories = categories;
-    if (platform.length) changes.platform = platform;
+    const check = (field, newVal, origVal) => {
+      const nStr = Array.isArray(newVal) ? newVal.join(',') : String(newVal||'');
+      const oStr = Array.isArray(origVal) ? origVal.join(',') : String(origVal||'');
+      if (nStr !== oStr) { changes[field] = newVal; originals[field] = origVal; }
+    };
+    check('name',        name,                 orig.name);
+    check('url',         url,                  orig.url);
+    check('thumbnail',   thumb,                orig.thumbnail);
+    check('description', desc,                 orig.description);
+    check('tags',        tags,                 orig.tags||[]);
+    check('categories',  categories,           orig.categories||[]);
+    check('platform',    platform,             orig.platform||['desktop','mobile']);
+    check('age',         age,                  orig.age||'all');
+    check('embeddable',  document.getElementById('eg_embeddable').checked, orig.embeddable !== false);
+    check('savesData',   document.getElementById('eg_saves_data').checked,  orig.savesData === true);
+
+    if (Object.keys(changes).length === 0) {
+      errEl.textContent = 'לא בוצע שום שינוי'; errEl.style.display=''; return;
+    }
   }
 
   btn.disabled = true; btn.textContent = 'שולח...';
@@ -1491,6 +1536,7 @@ async function submitEdit() {
       gameId,
       isDelete: isDelete || false,
       changes,
+      originals,
       reason: document.getElementById('eg_reason').value.trim() || '',
       submittedBy: user.uid,
       submittedByEmail: user.email || user.displayName || 'משתמש',
@@ -1611,49 +1657,85 @@ async function loadAdminEdits() {
       list.innerHTML = '<div style="text-align:center;color:var(--muted);padding:2rem;font-size:2rem;">✅</div>';
       return;
     }
-    document.getElementById('adminPanelCount').textContent = `${snap.size} עריכות ממתינות לאישור`;
+    document.getElementById('adminPanelCount').textContent = `${snap.size} עריכות ממתינות`;
+
+    const FIELD_LABELS = {
+      name:'שם', url:'קישור', thumbnail:'תמונה', description:'תיאור',
+      tags:'תגיות', categories:'קטגוריות', platform:'פלטפורמה',
+      age:'גילאים', embeddable:'ניתן להטמעה', savesData:'שומר נתונים'
+    };
+
     snap.forEach(docSnap => {
       const e = docSnap.data(); const id = docSnap.id;
+      const origGame = allGames.find(g => (g.id||g.name) === e.gameId) || {};
+
       const card = document.createElement('div');
       card.id = 'edit_' + id;
       card.className = 'edit-card';
 
-      // find original game data
-      const origGame = allGames.find(g => (g.id||g.name) === e.gameId) || {};
+      const header = document.createElement('div');
+      header.innerHTML = `
+        <div style="font-weight:800;font-size:.92rem;">✏️ ${e.gameId}</div>
+        <div style="font-size:.7rem;color:var(--muted);margin-top:2px;">הוגש ע"י: ${e.submittedByEmail}</div>
+        ${e.reason ? `<div style="font-size:.72rem;color:var(--blue);margin-top:2px;">💬 ${e.reason}</div>` : ''}`;
+      card.appendChild(header);
 
-      let diffHtml = '';
       if (e.isDelete) {
-        diffHtml = `<div style="background:rgba(255,62,108,.12);border:1px solid rgba(255,62,108,.25);border-radius:8px;padding:8px 12px;font-size:.8rem;color:var(--accent);font-weight:700;">🗑️ בקשת מחיקה של המשחק מהאתר</div>`;
+        const delBanner = document.createElement('div');
+        delBanner.style.cssText = 'background:rgba(255,62,108,.12);border:1px solid rgba(255,62,108,.25);border-radius:8px;padding:8px 12px;font-size:.8rem;color:var(--accent);font-weight:700;';
+        delBanner.textContent = '🗑️ בקשת מחיקה של המשחק מהאתר';
+        card.appendChild(delBanner);
       } else {
-        const fields = { name:'שם', url:'קישור', thumbnail:'תמונה', description:'תיאור', tags:'תגיות', categories:'קטגוריות', platform:'פלטפורמה' };
-        Object.entries(fields).forEach(([field, label]) => {
-          if (e.changes && field in e.changes) {
-            const oldVal = Array.isArray(origGame[field]) ? (origGame[field]||[]).join(', ') : (origGame[field]||'—');
-            const newVal = Array.isArray(e.changes[field]) ? e.changes[field].join(', ') : e.changes[field];
-            diffHtml += `<div style="margin-bottom:5px;"><div style="font-size:.7rem;color:var(--muted);margin-bottom:3px;font-weight:600;">${label}</div>
-              <div class="edit-diff">
-                <div class="edit-diff-old">➖ ${oldVal}</div>
-                <div class="edit-diff-arrow">→</div>
-                <div class="edit-diff-new">➕ ${newVal}</div>
-              </div></div>`;
-          }
-        });
-        if (!diffHtml) diffHtml = '<div style="font-size:.78rem;color:var(--muted);">אין שינויים מוגדרים</div>';
+        const fieldsWrap = document.createElement('div');
+        fieldsWrap.style.cssText = 'display:flex;flex-direction:column;gap:6px;margin-top:4px;';
+
+        const changedFields = Object.keys(e.changes || {});
+        if (!changedFields.length) {
+          fieldsWrap.innerHTML = '<div style="font-size:.78rem;color:var(--muted);">אין שינויים</div>';
+        } else {
+          changedFields.forEach(field => {
+            const label = FIELD_LABELS[field] || field;
+            const rawOrig = origGame[field];
+            const origVal = Array.isArray(rawOrig) ? rawOrig.join(', ') : String(rawOrig ?? '—');
+            const rawNew  = e.changes[field];
+            const newVal  = Array.isArray(rawNew) ? rawNew.join(', ') : String(rawNew ?? '');
+
+            const row = document.createElement('div');
+            row.style.cssText = 'display:flex;align-items:center;gap:8px;background:var(--bg);border-radius:8px;padding:7px 10px;border:1px solid var(--border);';
+            row.innerHTML = `
+              <label style="display:flex;align-items:center;cursor:pointer;flex-shrink:0;" title="${label} — לסמן = לאשר">
+                <input type="checkbox" class="field-approve-cb" data-field="${field}" data-editid="${id}"
+                       checked style="width:16px;height:16px;accent-color:#00e676;cursor:pointer;">
+              </label>
+              <div style="flex:1;min-width:0;">
+                <div style="font-size:.68rem;color:var(--muted);font-weight:800;margin-bottom:4px;letter-spacing:.3px;">${label.toUpperCase()}</div>
+                <div class="edit-diff">
+                  <div class="edit-diff-old" style="font-size:.72rem;">➖ ${origVal}</div>
+                  <div class="edit-diff-arrow">→</div>
+                  <div class="edit-diff-new" style="font-size:.72rem;">➕ ${newVal}</div>
+                </div>
+              </div>`;
+            fieldsWrap.appendChild(row);
+          });
+        }
+        card.appendChild(fieldsWrap);
+
+        const selectRow = document.createElement('div');
+        selectRow.style.cssText = 'display:flex;gap:6px;align-items:center;';
+        selectRow.innerHTML = `
+          <button onclick="toggleAllFields('${id}',true)"  style="font-size:.7rem;padding:3px 10px;border-radius:5px;border:1px solid rgba(0,230,118,.3);background:rgba(0,230,118,.08);color:#00e676;cursor:pointer;font-family:inherit;font-weight:700;">✔ הכל</button>
+          <button onclick="toggleAllFields('${id}',false)" style="font-size:.7rem;padding:3px 10px;border-radius:5px;border:1px solid rgba(255,62,108,.3);background:rgba(255,62,108,.08);color:var(--accent);cursor:pointer;font-family:inherit;font-weight:700;">✕ בטל הכל</button>
+          <span style="font-size:.68rem;color:var(--muted);">✅ מסומן = מאושר · ריק = נדחה</span>`;
+        card.appendChild(selectRow);
       }
 
-      card.innerHTML = `
-        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;">
-          <div>
-            <div style="font-weight:800;font-size:.92rem;">✏️ ${e.gameId}</div>
-            <div style="font-size:.7rem;color:var(--muted);margin-top:2px;">הוגש ע"י: ${e.submittedByEmail}</div>
-            ${e.reason ? `<div style="font-size:.72rem;color:var(--blue);margin-top:2px;">💬 ${e.reason}</div>` : ''}
-          </div>
-        </div>
-        <div style="margin:.25rem 0;">${diffHtml}</div>
-        <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.25rem;">
-          <button onclick="approveEdit('${id}')" style="flex:1;padding:8px;border-radius:8px;background:rgba(0,230,118,.15);border:1px solid rgba(0,230,118,.35);color:#00e676;font-family:inherit;font-weight:700;font-size:.8rem;cursor:pointer;">✅ אשר</button>
-          <button onclick="rejectEdit('${id}')" style="flex:1;padding:8px;border-radius:8px;background:rgba(255,62,108,.12);border:1px solid rgba(255,62,108,.3);color:var(--accent);font-family:inherit;font-weight:700;font-size:.8rem;cursor:pointer;">❌ דחה</button>
-        </div>`;
+      const actions = document.createElement('div');
+      actions.style.cssText = 'display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.25rem;';
+      actions.innerHTML = `
+        <button onclick="approveEdit('${id}')" style="flex:1;padding:8px;border-radius:8px;background:rgba(0,230,118,.15);border:1px solid rgba(0,230,118,.35);color:#00e676;font-family:inherit;font-weight:700;font-size:.8rem;cursor:pointer;">${e.isDelete ? '✅ אשר מחיקה' : '✅ החל נבחרים'}</button>
+        <button onclick="rejectEdit('${id}')" style="flex:1;padding:8px;border-radius:8px;background:rgba(255,62,108,.12);border:1px solid rgba(255,62,108,.3);color:var(--accent);font-family:inherit;font-weight:700;font-size:.8rem;cursor:pointer;">❌ דחה הכל</button>`;
+      card.appendChild(actions);
+
       list.appendChild(card);
     });
   } catch(e) {
@@ -1661,12 +1743,17 @@ async function loadAdminEdits() {
   }
 }
 
+function toggleAllFields(editId, state) {
+  document.querySelectorAll(`[data-editid="${editId}"]`).forEach(cb => cb.checked = state);
+}
+window.toggleAllFields = toggleAllFields;
+
 async function approveEdit(editId) {
   const card = document.getElementById('edit_' + editId);
   card.style.opacity = '.5'; card.style.pointerEvents = 'none';
   try {
-    const { db, doc, getDoc, setDoc, deleteDoc } = window._firebase;
-    const { getDatabase, ref, set, remove } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js');
+    const { db, doc, getDoc, setDoc } = window._firebase;
+    const { getDatabase, ref, set, remove, get } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js');
 
     const snap = await getDoc(doc(db, 'pending_edits', editId));
     const e = snap.data();
@@ -1674,22 +1761,40 @@ async function approveEdit(editId) {
     const gameRef = ref(rtdb, `games/${e.gameId}`);
 
     if (e.isDelete) {
-      // Delete from realtime DB
       await remove(gameRef);
-    } else {
-      // Apply changes to existing game
-      const gameSnap = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js')
-        .then(m => m.get(gameRef));
-      const existing = gameSnap.exists() ? gameSnap.val() : {};
-      await set(gameRef, { ...existing, ...e.changes });
-      // Update in-memory allGames
       const idx = allGames.findIndex(g => (g.id||g.name) === e.gameId);
-      if (idx !== -1) { allGames[idx] = { ...allGames[idx], ...e.changes }; render(); }
+      if (idx !== -1) { allGames.splice(idx, 1); render(); }
+      showToast('🗑️ המשחק נמחק!', 'success');
+    } else {
+      const approvedFields = {};
+      card.querySelectorAll('.field-approve-cb:checked').forEach(cb => {
+        const field = cb.dataset.field;
+        if (e.changes && field in e.changes) approvedFields[field] = e.changes[field];
+      });
+
+      if (Object.keys(approvedFields).length === 0) {
+        await setDoc(doc(db, 'pending_edits', editId), { status: 'rejected' }, { merge: true });
+        card.remove();
+        showToast('❌ אף שדה לא נבחר — נדחה', '');
+        loadPendingCount();
+        return;
+      }
+
+      const gameSnap = await get(gameRef);
+      const existing = gameSnap.exists() ? gameSnap.val() : {};
+      await set(gameRef, { ...existing, ...approvedFields });
+
+      const idx = allGames.findIndex(g => (g.id||g.name) === e.gameId);
+      if (idx !== -1) { allGames[idx] = { ...allGames[idx], ...approvedFields }; render(); }
+
+      const total   = Object.keys(e.changes || {}).length;
+      const applied = Object.keys(approvedFields).length;
+      const skipped = total - applied;
+      showToast(`✅ ${applied} שדות אושרו${skipped > 0 ? ` · ${skipped} נדחו` : ''}`, 'success');
     }
 
     await setDoc(doc(db, 'pending_edits', editId), { status: 'approved' }, { merge: true });
     card.remove();
-    showToast(e.isDelete ? '🗑️ המשחק נמחק!' : '✅ העריכה אושרה ויושמה!', 'success');
     loadPendingCount();
     const remaining = document.querySelectorAll('#adminPanelList [id^="edit_"]').length;
     if (remaining === 0) {
