@@ -211,6 +211,23 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:2rem 1.5
 #udAdminBtn.is-admin{color:#00e676;}
 #udAdminBtn.is-admin:hover{background:rgba(0,230,118,.08);color:#00e676;}
 
+/* EDIT BUTTON ON CARD */
+.card-edit-btn{position:absolute;top:7px;left:7px;width:28px;height:28px;border-radius:7px;background:rgba(10,11,20,.75);border:1px solid rgba(255,255,255,.18);color:#fff;font-size:.75rem;display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0;transition:var(--t);z-index:10;backdrop-filter:blur(4px);}
+.card:hover .card-edit-btn{opacity:1;}
+.card-edit-btn:hover{background:rgba(123,47,255,.7);border-color:var(--purple);}
+
+/* EDIT GAME MODAL */
+.edit-tabs{display:flex;background:var(--bg3);border-radius:10px;padding:3px;margin-bottom:1.2rem;gap:3px;}
+.edit-tab{flex:1;padding:7px;border-radius:8px;font-family:inherit;font-weight:700;font-size:.78rem;border:none;cursor:pointer;background:none;color:var(--muted);transition:var(--t);text-align:center;}
+.edit-tab.active{background:linear-gradient(135deg,var(--purple),var(--accent));color:#fff;}
+
+/* EDIT PANEL IN ADMIN */
+.edit-card{background:var(--card);border:1px solid rgba(255,204,0,.2);border-radius:12px;padding:1rem;display:flex;flex-direction:column;gap:.5rem;}
+.edit-diff{display:flex;gap:.5rem;align-items:flex-start;font-size:.78rem;}
+.edit-diff-old{background:rgba(255,62,108,.1);border:1px solid rgba(255,62,108,.2);color:#ff8a9e;padding:4px 8px;border-radius:6px;flex:1;word-break:break-all;}
+.edit-diff-new{background:rgba(0,230,118,.1);border:1px solid rgba(0,230,118,.2);color:#00e676;padding:4px 8px;border-radius:6px;flex:1;word-break:break-all;}
+.edit-diff-arrow{color:var(--muted);align-self:center;font-size:1rem;flex-shrink:0;}
+
 @media(max-width:600px){
   .hdr{padding:0 1rem;}
   .btn span{display:none;}
@@ -389,27 +406,27 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:2rem 1.5
       </div>
       <div class="auth-field">
         <label>קטגוריות (ניתן לבחור כמה)</label>
-        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:4px;" id="sg_cats_wrap">
-          <label style="font-size:.75rem;font-weight:600;color:var(--text);display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" value="action"> ⚡ פעולה</label>
-          <label style="font-size:.75rem;font-weight:600;color:var(--text);display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" value="puzzle"> 🧩 פאזל</label>
-          <label style="font-size:.75rem;font-weight:600;color:var(--text);display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" value="arcade"> 👾 ארקייד</label>
-          <label style="font-size:.75rem;font-weight:600;color:var(--text);display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" value="racing"> 🏎️ מירוצים</label>
-          <label style="font-size:.75rem;font-weight:600;color:var(--text);display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" value="rpg"> ⚔️ RPG</label>
-          <label style="font-size:.75rem;font-weight:600;color:var(--text);display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" value="strategy"> ♟️ אסטרטגיה</label>
-          <label style="font-size:.75rem;font-weight:600;color:var(--text);display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" value="sports"> ⚽ ספורט</label>
-          <label style="font-size:.75rem;font-weight:600;color:var(--text);display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" value="shooter"> 🔫 יריות</label>
-          <label style="font-size:.75rem;font-weight:600;color:var(--text);display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" value="board"> 🎲 לוח</label>
-          <label style="font-size:.75rem;font-weight:600;color:var(--text);display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" value="survival"> 💀 הישרדות</label>
-          <label style="font-size:.75rem;font-weight:600;color:var(--text);display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" value="casual"> 🌟 כיפי</label>
-          <label style="font-size:.75rem;font-weight:600;color:var(--text);display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" value="adventure"> 🗺️ הרפתקה</label>
-          <label style="font-size:.75rem;font-weight:600;color:var(--text);display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" value="multiplayer"> 👥 מרובה שחקנים</label>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:4px;" id="sg_cats_wrap">
+          <label style="font-size:.78rem;font-weight:600;color:var(--text);display:flex;align-items:center;gap:6px;cursor:pointer;background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:6px 8px;transition:var(--t);" onmouseover="this.style.borderColor='var(--blue)'" onmouseout="this.style.borderColor='var(--border)'"><input type="checkbox" value="action" style="flex-shrink:0;accent-color:var(--blue);width:14px;height:14px;"> ⚡ פעולה</label>
+          <label style="font-size:.78rem;font-weight:600;color:var(--text);display:flex;align-items:center;gap:6px;cursor:pointer;background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:6px 8px;transition:var(--t);" onmouseover="this.style.borderColor='var(--blue)'" onmouseout="this.style.borderColor='var(--border)'"><input type="checkbox" value="puzzle" style="flex-shrink:0;accent-color:var(--blue);width:14px;height:14px;"> 🧩 פאזל</label>
+          <label style="font-size:.78rem;font-weight:600;color:var(--text);display:flex;align-items:center;gap:6px;cursor:pointer;background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:6px 8px;transition:var(--t);" onmouseover="this.style.borderColor='var(--blue)'" onmouseout="this.style.borderColor='var(--border)'"><input type="checkbox" value="arcade" style="flex-shrink:0;accent-color:var(--blue);width:14px;height:14px;"> 👾 ארקייד</label>
+          <label style="font-size:.78rem;font-weight:600;color:var(--text);display:flex;align-items:center;gap:6px;cursor:pointer;background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:6px 8px;transition:var(--t);" onmouseover="this.style.borderColor='var(--blue)'" onmouseout="this.style.borderColor='var(--border)'"><input type="checkbox" value="racing" style="flex-shrink:0;accent-color:var(--blue);width:14px;height:14px;"> 🏎️ מירוצים</label>
+          <label style="font-size:.78rem;font-weight:600;color:var(--text);display:flex;align-items:center;gap:6px;cursor:pointer;background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:6px 8px;transition:var(--t);" onmouseover="this.style.borderColor='var(--blue)'" onmouseout="this.style.borderColor='var(--border)'"><input type="checkbox" value="rpg" style="flex-shrink:0;accent-color:var(--blue);width:14px;height:14px;"> ⚔️ RPG</label>
+          <label style="font-size:.78rem;font-weight:600;color:var(--text);display:flex;align-items:center;gap:6px;cursor:pointer;background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:6px 8px;transition:var(--t);" onmouseover="this.style.borderColor='var(--blue)'" onmouseout="this.style.borderColor='var(--border)'"><input type="checkbox" value="strategy" style="flex-shrink:0;accent-color:var(--blue);width:14px;height:14px;"> ♟️ אסטרטגיה</label>
+          <label style="font-size:.78rem;font-weight:600;color:var(--text);display:flex;align-items:center;gap:6px;cursor:pointer;background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:6px 8px;transition:var(--t);" onmouseover="this.style.borderColor='var(--blue)'" onmouseout="this.style.borderColor='var(--border)'"><input type="checkbox" value="sports" style="flex-shrink:0;accent-color:var(--blue);width:14px;height:14px;"> ⚽ ספורט</label>
+          <label style="font-size:.78rem;font-weight:600;color:var(--text);display:flex;align-items:center;gap:6px;cursor:pointer;background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:6px 8px;transition:var(--t);" onmouseover="this.style.borderColor='var(--blue)'" onmouseout="this.style.borderColor='var(--border)'"><input type="checkbox" value="shooter" style="flex-shrink:0;accent-color:var(--blue);width:14px;height:14px;"> 🔫 יריות</label>
+          <label style="font-size:.78rem;font-weight:600;color:var(--text);display:flex;align-items:center;gap:6px;cursor:pointer;background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:6px 8px;transition:var(--t);" onmouseover="this.style.borderColor='var(--blue)'" onmouseout="this.style.borderColor='var(--border)'"><input type="checkbox" value="board" style="flex-shrink:0;accent-color:var(--blue);width:14px;height:14px;"> 🎲 לוח</label>
+          <label style="font-size:.78rem;font-weight:600;color:var(--text);display:flex;align-items:center;gap:6px;cursor:pointer;background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:6px 8px;transition:var(--t);" onmouseover="this.style.borderColor='var(--blue)'" onmouseout="this.style.borderColor='var(--border)'"><input type="checkbox" value="survival" style="flex-shrink:0;accent-color:var(--blue);width:14px;height:14px;"> 💀 הישרדות</label>
+          <label style="font-size:.78rem;font-weight:600;color:var(--text);display:flex;align-items:center;gap:6px;cursor:pointer;background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:6px 8px;transition:var(--t);" onmouseover="this.style.borderColor='var(--blue)'" onmouseout="this.style.borderColor='var(--border)'"><input type="checkbox" value="casual" style="flex-shrink:0;accent-color:var(--blue);width:14px;height:14px;"> 🌟 כיפי</label>
+          <label style="font-size:.78rem;font-weight:600;color:var(--text);display:flex;align-items:center;gap:6px;cursor:pointer;background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:6px 8px;transition:var(--t);" onmouseover="this.style.borderColor='var(--blue)'" onmouseout="this.style.borderColor='var(--border)'"><input type="checkbox" value="adventure" style="flex-shrink:0;accent-color:var(--blue);width:14px;height:14px;"> 🗺️ הרפתקה</label>
+          <label style="font-size:.78rem;font-weight:600;color:var(--text);display:flex;align-items:center;gap:6px;cursor:pointer;background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:6px 8px;transition:var(--t);grid-column:span 2;" onmouseover="this.style.borderColor='var(--blue)'" onmouseout="this.style.borderColor='var(--border)'"><input type="checkbox" value="multiplayer" style="flex-shrink:0;accent-color:var(--blue);width:14px;height:14px;"> 👥 מרובה שחקנים</label>
         </div>
       </div>
       <div class="auth-field">
         <label>פלטפורמה</label>
-        <div style="display:flex;gap:12px;margin-top:4px;">
-          <label style="font-size:.75rem;font-weight:600;color:var(--text);display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" value="desktop" id="sg_plat_desktop" checked> 🖥️ מחשב</label>
-          <label style="font-size:.75rem;font-weight:600;color:var(--text);display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" value="mobile" id="sg_plat_mobile" checked> 📱 נייד</label>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:4px;">
+          <label style="font-size:.78rem;font-weight:600;color:var(--text);display:flex;align-items:center;gap:6px;cursor:pointer;background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:6px 8px;transition:var(--t);" onmouseover="this.style.borderColor='var(--blue)'" onmouseout="this.style.borderColor='var(--border)'"><input type="checkbox" value="desktop" id="sg_plat_desktop" checked style="flex-shrink:0;accent-color:var(--blue);width:14px;height:14px;"> 🖥️ מחשב</label>
+          <label style="font-size:.78rem;font-weight:600;color:var(--text);display:flex;align-items:center;gap:6px;cursor:pointer;background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:6px 8px;transition:var(--t);" onmouseover="this.style.borderColor='var(--blue)'" onmouseout="this.style.borderColor='var(--border)'"><input type="checkbox" value="mobile" id="sg_plat_mobile" checked style="flex-shrink:0;accent-color:var(--blue);width:14px;height:14px;"> 📱 נייד</label>
         </div>
       </div>
       <div class="auth-field">
@@ -465,6 +482,10 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:2rem 1.5
       <h2>פאנל אדמין</h2>
       <p id="adminPanelCount">טוען בקשות...</p>
     </div>
+    <div class="edit-tabs" style="margin-bottom:1rem;">
+      <button class="edit-tab active" id="adminTabGames" onclick="switchAdminTab('games')">🎮 משחקים חדשים <span id="pendingGamesCount"></span></button>
+      <button class="edit-tab" id="adminTabEdits" onclick="switchAdminTab('edits')">✏️ עריכות <span id="pendingEditsCount"></span></button>
+    </div>
     <div id="adminPanelList" style="display:flex;flex-direction:column;gap:.75rem;"></div>
   </div>
 </div>
@@ -495,6 +516,105 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:2rem 1.5
   </div>
 </div>
 
+<!-- EDIT GAME MODAL -->
+<div class="auth-modal-bg" id="editGameBg" onclick="if(event.target===this)closeEditGame()">
+  <div class="auth-modal" style="max-width:500px;max-height:90vh;overflow-y:auto;">
+    <button class="auth-close" onclick="closeEditGame()">✕</button>
+    <div class="auth-logo">
+      <div class="al-icon" style="background:linear-gradient(135deg,var(--blue),var(--purple));">✏️</div>
+      <h2 id="editGameTitle">עריכת משחק</h2>
+      <p style="font-size:.75rem;color:var(--muted);">העריכה תשלח לאישור מנהל</p>
+    </div>
+    <div id="editGameErr" class="auth-err"></div>
+    <div id="editGameSuccess" style="display:none;text-align:center;padding:1.5rem 0;">
+      <div style="font-size:2.5rem;margin-bottom:.5rem;">📬</div>
+      <div style="font-weight:800;margin-bottom:.4rem;">העריכה נשלחה!</div>
+      <div style="font-size:.8rem;color:var(--muted);">המנהל יבדוק ויאשר בקרוב.</div>
+    </div>
+    <div id="editGameForm">
+      <input type="hidden" id="eg_id">
+      <div class="auth-field">
+        <label>שם המשחק</label>
+        <input type="text" id="eg_name" placeholder="שם המשחק">
+      </div>
+      <div class="auth-field">
+        <label>קישור למשחק (URL)</label>
+        <input type="url" id="eg_url" placeholder="https://...">
+      </div>
+      <div class="auth-field">
+        <label>תמונה ממוזערת (URL)</label>
+        <input type="url" id="eg_thumb" placeholder="https://...">
+      </div>
+      <div class="auth-field">
+        <label>תיאור</label>
+        <input type="text" id="eg_desc" placeholder="תיאור קצר">
+      </div>
+      <div class="auth-field">
+        <label>תגיות (מופרדות בפסיק)</label>
+        <input type="text" id="eg_tags" placeholder="כיפי, קלאסי, multiplayer">
+      </div>
+      <div class="auth-field">
+        <label>טווח גילאים מתאים</label>
+        <div style="display:flex;align-items:center;gap:8px;margin-top:4px;">
+          <input type="number" id="eg_age_from" min="0" max="100" placeholder="0" value="0"
+                 style="flex:1;padding:9px 10px;background:var(--bg3);border:1.5px solid var(--border);border-radius:10px;color:var(--text);font-family:inherit;font-size:.88rem;outline:none;text-align:center;">
+          <span style="color:var(--muted);font-size:.8rem;flex-shrink:0;">עד</span>
+          <input type="number" id="eg_age_to" min="0" max="100" placeholder="100" value="100"
+                 style="flex:1;padding:9px 10px;background:var(--bg3);border:1.5px solid var(--border);border-radius:10px;color:var(--text);font-family:inherit;font-size:.88rem;outline:none;text-align:center;">
+        </div>
+        <div style="font-size:.7rem;color:var(--muted);margin-top:4px;">למי המשחק הכי מעניין ומתאים (0–100)</div>
+      </div>
+      <div class="auth-field">
+        <label>קטגוריות</label>
+        <div id="eg_cats_wrap" style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:4px;">
+          <label style="font-size:.78rem;font-weight:600;color:var(--text);display:flex;align-items:center;gap:6px;cursor:pointer;background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:6px 8px;transition:var(--t);" onmouseover="this.style.borderColor='var(--purple)'" onmouseout="this.style.borderColor='var(--border)'"><input type="checkbox" value="action" style="flex-shrink:0;accent-color:var(--purple);width:14px;height:14px;"> ⚡ פעולה</label>
+          <label style="font-size:.78rem;font-weight:600;color:var(--text);display:flex;align-items:center;gap:6px;cursor:pointer;background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:6px 8px;transition:var(--t);" onmouseover="this.style.borderColor='var(--purple)'" onmouseout="this.style.borderColor='var(--border)'"><input type="checkbox" value="puzzle" style="flex-shrink:0;accent-color:var(--purple);width:14px;height:14px;"> 🧩 פאזל</label>
+          <label style="font-size:.78rem;font-weight:600;color:var(--text);display:flex;align-items:center;gap:6px;cursor:pointer;background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:6px 8px;transition:var(--t);" onmouseover="this.style.borderColor='var(--purple)'" onmouseout="this.style.borderColor='var(--border)'"><input type="checkbox" value="arcade" style="flex-shrink:0;accent-color:var(--purple);width:14px;height:14px;"> 👾 ארקייד</label>
+          <label style="font-size:.78rem;font-weight:600;color:var(--text);display:flex;align-items:center;gap:6px;cursor:pointer;background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:6px 8px;transition:var(--t);" onmouseover="this.style.borderColor='var(--purple)'" onmouseout="this.style.borderColor='var(--border)'"><input type="checkbox" value="racing" style="flex-shrink:0;accent-color:var(--purple);width:14px;height:14px;"> 🏎️ מירוצים</label>
+          <label style="font-size:.78rem;font-weight:600;color:var(--text);display:flex;align-items:center;gap:6px;cursor:pointer;background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:6px 8px;transition:var(--t);" onmouseover="this.style.borderColor='var(--purple)'" onmouseout="this.style.borderColor='var(--border)'"><input type="checkbox" value="rpg" style="flex-shrink:0;accent-color:var(--purple);width:14px;height:14px;"> ⚔️ RPG</label>
+          <label style="font-size:.78rem;font-weight:600;color:var(--text);display:flex;align-items:center;gap:6px;cursor:pointer;background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:6px 8px;transition:var(--t);" onmouseover="this.style.borderColor='var(--purple)'" onmouseout="this.style.borderColor='var(--border)'"><input type="checkbox" value="strategy" style="flex-shrink:0;accent-color:var(--purple);width:14px;height:14px;"> ♟️ אסטרטגיה</label>
+          <label style="font-size:.78rem;font-weight:600;color:var(--text);display:flex;align-items:center;gap:6px;cursor:pointer;background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:6px 8px;transition:var(--t);" onmouseover="this.style.borderColor='var(--purple)'" onmouseout="this.style.borderColor='var(--border)'"><input type="checkbox" value="sports" style="flex-shrink:0;accent-color:var(--purple);width:14px;height:14px;"> ⚽ ספורט</label>
+          <label style="font-size:.78rem;font-weight:600;color:var(--text);display:flex;align-items:center;gap:6px;cursor:pointer;background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:6px 8px;transition:var(--t);" onmouseover="this.style.borderColor='var(--purple)'" onmouseout="this.style.borderColor='var(--border)'"><input type="checkbox" value="shooter" style="flex-shrink:0;accent-color:var(--purple);width:14px;height:14px;"> 🔫 יריות</label>
+          <label style="font-size:.78rem;font-weight:600;color:var(--text);display:flex;align-items:center;gap:6px;cursor:pointer;background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:6px 8px;transition:var(--t);" onmouseover="this.style.borderColor='var(--purple)'" onmouseout="this.style.borderColor='var(--border)'"><input type="checkbox" value="board" style="flex-shrink:0;accent-color:var(--purple);width:14px;height:14px;"> 🎲 לוח</label>
+          <label style="font-size:.78rem;font-weight:600;color:var(--text);display:flex;align-items:center;gap:6px;cursor:pointer;background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:6px 8px;transition:var(--t);" onmouseover="this.style.borderColor='var(--purple)'" onmouseout="this.style.borderColor='var(--border)'"><input type="checkbox" value="survival" style="flex-shrink:0;accent-color:var(--purple);width:14px;height:14px;"> 💀 הישרדות</label>
+          <label style="font-size:.78rem;font-weight:600;color:var(--text);display:flex;align-items:center;gap:6px;cursor:pointer;background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:6px 8px;transition:var(--t);" onmouseover="this.style.borderColor='var(--purple)'" onmouseout="this.style.borderColor='var(--border)'"><input type="checkbox" value="casual" style="flex-shrink:0;accent-color:var(--purple);width:14px;height:14px;"> 🌟 כיפי</label>
+          <label style="font-size:.78rem;font-weight:600;color:var(--text);display:flex;align-items:center;gap:6px;cursor:pointer;background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:6px 8px;transition:var(--t);" onmouseover="this.style.borderColor='var(--purple)'" onmouseout="this.style.borderColor='var(--border)'"><input type="checkbox" value="adventure" style="flex-shrink:0;accent-color:var(--purple);width:14px;height:14px;"> 🗺️ הרפתקה</label>
+          <label style="font-size:.78rem;font-weight:600;color:var(--text);display:flex;align-items:center;gap:6px;cursor:pointer;background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:6px 8px;transition:var(--t);grid-column:span 2;" onmouseover="this.style.borderColor='var(--purple)'" onmouseout="this.style.borderColor='var(--border)'"><input type="checkbox" value="multiplayer" style="flex-shrink:0;accent-color:var(--purple);width:14px;height:14px;"> 👥 מרובה שחקנים</label>
+        </div>
+      </div>
+      <div class="auth-field">
+        <label>פלטפורמה</label>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:4px;">
+          <label style="font-size:.78rem;font-weight:600;color:var(--text);display:flex;align-items:center;gap:6px;cursor:pointer;background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:6px 8px;transition:var(--t);" onmouseover="this.style.borderColor='var(--purple)'" onmouseout="this.style.borderColor='var(--border)'"><input type="checkbox" value="desktop" id="eg_plat_desktop" style="flex-shrink:0;accent-color:var(--purple);width:14px;height:14px;"> 🖥️ מחשב</label>
+          <label style="font-size:.78rem;font-weight:600;color:var(--text);display:flex;align-items:center;gap:6px;cursor:pointer;background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:6px 8px;transition:var(--t);" onmouseover="this.style.borderColor='var(--purple)'" onmouseout="this.style.borderColor='var(--border)'"><input type="checkbox" value="mobile" id="eg_plat_mobile" style="flex-shrink:0;accent-color:var(--purple);width:14px;height:14px;"> 📱 נייד</label>
+        </div>
+      </div>
+      <div class="auth-field">
+        <label>הגדרות נוספות</label>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:4px;">
+          <label style="font-size:.78rem;font-weight:600;color:var(--text);display:flex;align-items:center;gap:6px;cursor:pointer;background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:6px 8px;transition:var(--t);" onmouseover="this.style.borderColor='var(--purple)'" onmouseout="this.style.borderColor='var(--border)'"><input type="checkbox" id="eg_embeddable" style="flex-shrink:0;accent-color:var(--purple);width:14px;height:14px;"> ▶ ניתן להטמעה</label>
+          <label style="font-size:.78rem;font-weight:600;color:var(--text);display:flex;align-items:center;gap:6px;cursor:pointer;background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:6px 8px;transition:var(--t);" onmouseover="this.style.borderColor='var(--purple)'" onmouseout="this.style.borderColor='var(--border)'"><input type="checkbox" id="eg_saves_data" style="flex-shrink:0;accent-color:var(--purple);width:14px;height:14px;"> 💾 שומר נתונים</label>
+        </div>
+      </div>
+      <div class="auth-field" style="background:rgba(255,62,108,.06);border:1px solid rgba(255,62,108,.2);border-radius:10px;padding:10px 14px;">
+        <label style="color:var(--accent);">🗑️ בקשת מחיקה</label>
+        <div style="display:flex;align-items:center;gap:8px;margin-top:6px;">
+          <input type="checkbox" id="eg_delete" style="width:16px;height:16px;accent-color:var(--accent);">
+          <label for="eg_delete" style="font-size:.78rem;color:var(--muted);cursor:pointer;">בקש מחיקת משחק זה מהאתר</label>
+        </div>
+      </div>
+      <div class="auth-field">
+        <label>סיבת השינוי (אופציונלי)</label>
+        <input type="text" id="eg_reason" placeholder="למשל: הקישור שבור, שם שגוי...">
+      </div>
+      <button class="auth-submit" id="submitEditBtn" onclick="submitEdit()"
+              style="background:linear-gradient(135deg,var(--blue),var(--purple));margin-top:.5rem;">
+        שלח לאישור ✏️
+      </button>
+    </div>
+  </div>
+</div>
+
 <!-- TOAST -->
 
 <div class="toast" id="toast"></div>
@@ -509,7 +629,7 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:2rem 1.5
 // The real implementations override them once the module is ready.
 ['openAuth','closeAuth','switchTab','toggleDropdown','signInWithGoogle',
  'signInEmail','registerEmail','continueAnonymously','signOutUser','forgotPassword',
- 'openAdminModal','closeAdminModal','submitAdminPassword'
+ 'openAdminModal','closeAdminModal','submitAdminPassword','closeEditGame'
 ].forEach(fn => {
   if (!window[fn]) window[fn] = (...args) => {
     // Queue the call until the real function is ready
@@ -1004,6 +1124,24 @@ function buildCard(game) {
     if (canEmbed) { openGame(game); }
     else { window.open(game.url, '_blank', 'noopener'); }
   });
+
+  // Edit button (only for logged-in non-anon users)
+  const editBtn = document.createElement('button');
+  editBtn.className = 'card-edit-btn';
+  editBtn.title = 'הצע עריכה';
+  editBtn.textContent = '✏️';
+  editBtn.addEventListener('click', e => {
+    e.stopPropagation();
+    const user = window._currentUser;
+    if (!user || user.isAnonymous) {
+      showToast('יש להתחבר כדי לערוך משחקים', 'error');
+      openAuth();
+      return;
+    }
+    openEditGame(game);
+  });
+  thumb.appendChild(editBtn);
+
   return card;
 }
 
@@ -1111,7 +1249,7 @@ function showToast(msg, type='') {
 document.getElementById('modalClose').addEventListener('click', closeModal);
 document.getElementById('modalBg').addEventListener('click', e => { if(e.target===e.currentTarget) closeModal(); });
 document.getElementById('authBg').addEventListener('click', e => { if(e.target===e.currentTarget) closeAuth(); });
-document.addEventListener('keydown', e => { if(e.key==='Escape') { closeModal(); closeAuth(); } });
+document.addEventListener('keydown', e => { if(e.key==='Escape') { closeModal(); closeAuth(); closeEditGame(); } });
 document.addEventListener('click', e => { if(!document.getElementById('userMenu').contains(e.target)) closeDropdown(); });
 document.getElementById('searchInput').addEventListener('input', function(){
   currentSearch=this.value;
@@ -1156,15 +1294,69 @@ function closeSubmitGame() {
   document.getElementById('submitGameBg').classList.remove('open');
 }
 
-async function checkSavesData(url) {
-  try {
-    const res = await fetch(url, { mode: 'cors' });
-    const html = await res.text();
-    return html.includes('firebase-ls-proxy.js');
-  } catch(e) {
-    return false; // אם לא ניתן לטעון — מניחים שלא
-  }
+// ── Saves detection via iframe postMessage ──────────────────
+function checkSavesData(url) {
+  return new Promise(resolve => {
+    const PROXY_SIG = 'firebase-ls-proxy';
+    const iframe = document.createElement('iframe');
+    iframe.style.cssText = 'position:fixed;width:1px;height:1px;opacity:0;pointer-events:none;top:-9999px;left:-9999px;';
+    iframe.sandbox = 'allow-scripts allow-same-origin';
+
+    let done = false;
+    const finish = (result) => {
+      if (done) return;
+      done = true;
+      clearTimeout(timer);
+      window.removeEventListener('message', onMsg);
+      iframe.remove();
+      resolve(result);
+    };
+
+    const onMsg = (e) => {
+      if (e.source !== iframe.contentWindow) return;
+      const d = e.data;
+      if (d && (d.type === PROXY_SIG || d.warpProxy || d.source === PROXY_SIG)) {
+        finish(true);
+      }
+    };
+    window.addEventListener('message', onMsg);
+
+    // Also detect via iframe load — check if page title/URL hints at proxy
+    iframe.onload = () => {
+      // Give proxy 1.5 s to post its message
+      setTimeout(() => finish(false), 1500);
+    };
+    iframe.onerror = () => finish(false);
+
+    // Timeout safety
+    const timer = setTimeout(() => finish(false), 6000);
+
+    document.body.appendChild(iframe);
+    iframe.src = url;
+  });
 }
+
+// Admin manual check button handler
+async function checkSavesAdmin(pendingId, url) {
+  const btn   = document.getElementById(`saves_btn_${pendingId}`);
+  const label = document.getElementById(`saves_label_${pendingId}`);
+  btn.disabled = true;
+  btn.textContent = '⏳ בודק...';
+  const result = await checkSavesData(url);
+  label.textContent = result ? '☁️ כן' : '💾 לא';
+  label.style.color  = result ? '#00e676' : 'var(--muted)';
+  btn.textContent = result ? '✅ נמצא' : '❌ לא נמצא';
+  btn.style.background = result ? 'rgba(0,230,118,.15)' : 'rgba(255,62,108,.1)';
+  btn.style.borderColor = result ? 'rgba(0,230,118,.3)' : 'rgba(255,62,108,.25)';
+  btn.style.color = result ? '#00e676' : 'var(--accent)';
+
+  // Update Firestore
+  try {
+    const { db, doc, setDoc } = window._firebase;
+    await setDoc(doc(db, 'pending_games', pendingId), { savesData: result }, { merge: true });
+  } catch(e) { console.warn('saves update:', e); }
+}
+window.checkSavesAdmin = checkSavesAdmin;
 
 async function submitGame() {
   const name  = document.getElementById('sg_name').value.trim();
@@ -1189,9 +1381,9 @@ async function submitGame() {
   if (!name || !url) { errEl.textContent = 'שם וקישור הם שדות חובה'; errEl.style.display=''; return; }
   if (!categories.length) { errEl.textContent = 'בחר לפחות קטגוריה אחת'; errEl.style.display=''; return; }
 
-  btn.disabled = true; btn.textContent = 'בודק משחק...';
+  btn.disabled = true; btn.textContent = 'שולח...';
   try {
-    const savesData = await checkSavesData(url);
+    const savesData = false; // האדמין יבדוק ידנית בפאנל
     const { db, collection } = window._firebase;
     const { addDoc, serverTimestamp } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
     const user = window._currentUser;
@@ -1243,15 +1435,156 @@ function copyProxyScript(btn) {
 }
 window.copyProxyScript = copyProxyScript;
 
+// ── EDIT GAME ─────────────────────────────────────────────
+function openEditGame(game) {
+  document.getElementById('editGameTitle').textContent = 'עריכת: ' + game.name;
+  document.getElementById('editGameErr').style.display = 'none';
+  document.getElementById('editGameSuccess').style.display = 'none';
+  document.getElementById('editGameForm').style.display = '';
+  document.getElementById('eg_id').value      = game.id || game.name;
+  document.getElementById('eg_name').value    = game.name || '';
+  document.getElementById('eg_url').value     = game.url || '';
+  document.getElementById('eg_thumb').value   = game.thumbnail || '';
+  document.getElementById('eg_desc').value    = game.description || '';
+  document.getElementById('eg_tags').value    = (game.tags||[]).join(', ');
+  document.getElementById('eg_reason').value  = '';
+  document.getElementById('eg_delete').checked = false;
+  // age
+  const ageParts = (game.age || 'all') === 'all' ? ['0','100'] : String(game.age).split('-');
+  document.getElementById('eg_age_from').value = ageParts[0] || '0';
+  document.getElementById('eg_age_to').value   = ageParts[1] || '100';
+  // platform
+  document.getElementById('eg_plat_desktop').checked = (game.platform||['desktop']).includes('desktop');
+  document.getElementById('eg_plat_mobile').checked  = (game.platform||['mobile']).includes('mobile');
+  // savesData + embeddable
+  document.getElementById('eg_saves_data').checked = game.savesData === true;
+  document.getElementById('eg_embeddable').checked  = game.embeddable !== false;
+  // cats
+  document.querySelectorAll('#eg_cats_wrap input[type=checkbox]').forEach(cb => {
+    cb.checked = (game.categories||[]).includes(cb.value);
+  });
+  // store original for diff detection
+  window._editingGame = game;
+  document.getElementById('editGameBg').classList.add('open');
+}
+
+function closeEditGame() {
+  document.getElementById('editGameBg').classList.remove('open');
+}
+
+async function submitEdit() {
+  const gameId   = document.getElementById('eg_id').value;
+  const isDelete = document.getElementById('eg_delete').checked;
+  const btn      = document.getElementById('submitEditBtn');
+  const errEl    = document.getElementById('editGameErr');
+  const orig     = window._editingGame || {};
+
+  const user = window._currentUser;
+  if (!user || user.isAnonymous) {
+    errEl.textContent = 'יש להתחבר כדי לשלוח עריכה';
+    errEl.style.display = ''; return;
+  }
+
+  // changes: only fields that actually differ from original
+  const changes = {};
+  const originals = {}; // original values for admin diff display
+
+  if (!isDelete) {
+    const name  = document.getElementById('eg_name').value.trim();
+    const url   = document.getElementById('eg_url').value.trim();
+    const thumb = document.getElementById('eg_thumb').value.trim();
+    const desc  = document.getElementById('eg_desc').value.trim();
+    const tagsRaw = document.getElementById('eg_tags').value.trim();
+    const tags  = tagsRaw ? tagsRaw.split(',').map(t=>t.trim()).filter(Boolean) : [];
+    const categories = [...document.querySelectorAll('#eg_cats_wrap input:checked')].map(i=>i.value);
+    const platform = [];
+    if (document.getElementById('eg_plat_desktop').checked) platform.push('desktop');
+    if (document.getElementById('eg_plat_mobile').checked) platform.push('mobile');
+    const ageFrom = parseInt(document.getElementById('eg_age_from').value) || 0;
+    const ageTo   = parseInt(document.getElementById('eg_age_to').value) || 100;
+    const age     = ageFrom === 0 && ageTo === 100 ? 'all' : `${ageFrom}-${ageTo}`;
+
+    if (!name) { errEl.textContent = 'שם המשחק חובה'; errEl.style.display=''; return; }
+    if (!categories.length) { errEl.textContent = 'בחר לפחות קטגוריה אחת'; errEl.style.display=''; return; }
+
+    const check = (field, newVal, origVal) => {
+      const nStr = Array.isArray(newVal) ? newVal.join(',') : String(newVal||'');
+      const oStr = Array.isArray(origVal) ? origVal.join(',') : String(origVal||'');
+      if (nStr !== oStr) { changes[field] = newVal; originals[field] = origVal; }
+    };
+    check('name',        name,                 orig.name);
+    check('url',         url,                  orig.url);
+    check('thumbnail',   thumb,                orig.thumbnail);
+    check('description', desc,                 orig.description);
+    check('tags',        tags,                 orig.tags||[]);
+    check('categories',  categories,           orig.categories||[]);
+    check('platform',    platform,             orig.platform||['desktop','mobile']);
+    check('age',         age,                  orig.age||'all');
+    check('embeddable',  document.getElementById('eg_embeddable').checked, orig.embeddable !== false);
+    check('savesData',   document.getElementById('eg_saves_data').checked,  orig.savesData === true);
+
+    if (Object.keys(changes).length === 0) {
+      errEl.textContent = 'לא בוצע שום שינוי'; errEl.style.display=''; return;
+    }
+  }
+
+  btn.disabled = true; btn.textContent = 'שולח...';
+  try {
+    const { db, collection } = window._firebase;
+    const { addDoc, serverTimestamp } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    await addDoc(collection(db, 'pending_edits'), {
+      gameId,
+      isDelete: isDelete || false,
+      changes,
+      originals,
+      reason: document.getElementById('eg_reason').value.trim() || '',
+      submittedBy: user.uid,
+      submittedByEmail: user.email || user.displayName || 'משתמש',
+      status: 'pending',
+      createdAt: serverTimestamp(),
+    });
+    document.getElementById('editGameForm').style.display = 'none';
+    document.getElementById('editGameSuccess').style.display = '';
+    setTimeout(closeEditGame, 2500);
+  } catch(e) {
+    errEl.textContent = 'שגיאה: ' + e.message;
+    errEl.style.display = '';
+  }
+  btn.disabled = false; btn.textContent = 'שלח לאישור ✏️';
+}
+
+window.openEditGame  = openEditGame;
+window.closeEditGame = closeEditGame;
+window.submitEdit    = submitEdit;
+
 // ── ADMIN PANEL ───────────────────────────────────────────
 async function loadPendingCount() {
   try {
     const { db, collection, getDocs } = window._firebase;
     const { query, where } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
-    const snap = await getDocs(query(collection(db, 'pending_games'), where('status','==','pending')));
-    const count = snap.size;
-    document.getElementById('pendingBadge').textContent = count > 0 ? `(${count})` : '';
+    const [gamesSnap, editsSnap] = await Promise.all([
+      getDocs(query(collection(db, 'pending_games'), where('status','==','pending'))),
+      getDocs(query(collection(db, 'pending_edits'), where('status','==','pending'))),
+    ]);
+    const gCount = gamesSnap.size;
+    const eCount = editsSnap.size;
+    const total = gCount + eCount;
+    document.getElementById('pendingBadge').textContent = total > 0 ? `(${total})` : '';
+    const gc = document.getElementById('pendingGamesCount');
+    const ec = document.getElementById('pendingEditsCount');
+    if (gc) gc.textContent = gCount > 0 ? `(${gCount})` : '';
+    if (ec) ec.textContent = eCount > 0 ? `(${eCount})` : '';
   } catch(e) {}
+}
+
+window._adminTab = 'games';
+
+function switchAdminTab(tab) {
+  window._adminTab = tab;
+  document.getElementById('adminTabGames').classList.toggle('active', tab==='games');
+  document.getElementById('adminTabEdits').classList.toggle('active', tab==='edits');
+  if (tab==='games') loadAdminGames();
+  else loadAdminEdits();
 }
 
 async function openAdminPanel() {
@@ -1259,26 +1592,26 @@ async function openAdminPanel() {
   if (!window._isAdmin) return;
   document.getElementById('adminPanelList').innerHTML = '<div style="text-align:center;color:var(--muted);padding:2rem;">⏳ טוען...</div>';
   document.getElementById('adminPanelBg').classList.add('open');
+  await loadAdminGames();
+  await loadPendingCount();
+}
 
+async function loadAdminGames() {
+  const list = document.getElementById('adminPanelList');
+  list.innerHTML = '<div style="text-align:center;color:var(--muted);padding:2rem;">⏳ טוען...</div>';
   try {
-    const { db, collection, getDocs, doc, setDoc, deleteDoc } = window._firebase;
-    const { query, where, addDoc, serverTimestamp } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    const { db, collection, getDocs } = window._firebase;
+    const { query, where } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
     const snap = await getDocs(query(collection(db, 'pending_games'), where('status','==','pending')));
-
-    const list = document.getElementById('adminPanelList');
     list.innerHTML = '';
-
     if (snap.empty) {
-      document.getElementById('adminPanelCount').textContent = 'אין בקשות ממתינות 🎉';
+      document.getElementById('adminPanelCount').textContent = 'אין משחקים ממתינים 🎉';
       list.innerHTML = '<div style="text-align:center;color:var(--muted);padding:2rem;font-size:2rem;">✅</div>';
       return;
     }
-
-    document.getElementById('adminPanelCount').textContent = `${snap.size} בקשות ממתינות לאישור`;
-
+    document.getElementById('adminPanelCount').textContent = `${snap.size} משחקים ממתינים לאישור`;
     snap.forEach(docSnap => {
-      const g = docSnap.data();
-      const id = docSnap.id;
+      const g = docSnap.data(); const id = docSnap.id;
       const card = document.createElement('div');
       card.id = 'pending_' + id;
       card.style.cssText = 'background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1rem;display:flex;flex-direction:column;gap:.5rem;';
@@ -1288,10 +1621,10 @@ async function openAdminPanel() {
           <div style="flex:1;min-width:0;">
             <div style="font-weight:800;font-size:.95rem;">${g.name}</div>
             <a href="${g.url}" target="_blank" rel="noopener" id="url_display_${id}" style="font-size:.72rem;color:var(--blue);margin-top:2px;display:block;word-break:break-all;text-decoration:none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">${g.url}</a>
-            <div style="font-size:.7rem;color:var(--muted);margin-top:2px;">הוגש על ידי: ${g.submittedByEmail} · קטגוריה: ${g.categories?.[0]||'—'} · שמירה: <span style="color:${g.savesData ? '#00e676' : 'var(--muted)'};">${g.savesData ? '☁️ כן' : '💾 לא'}</span></div>
+            <div style="font-size:.7rem;color:var(--muted);margin-top:2px;">הוגש ע"י: ${g.submittedByEmail} · ${g.categories?.[0]||'—'} · שמירה: <span id="saves_label_${id}" style="color:${g.savesData?'#00e676':'var(--muted)'};">${g.savesData?'☁️ כן':'❓ לא נבדק'}</span></div>
           </div>
         </div>
-        ${g.description ? `<div style="font-size:.78rem;color:var(--muted);">${g.description}</div>` : ''}
+        ${g.description?`<div style="font-size:.78rem;color:var(--muted);">${g.description}</div>`:''}
         <div id="url_edit_row_${id}" style="display:none;gap:.5rem;align-items:center;">
           <input id="url_input_${id}" value="${g.url}" style="flex:1;padding:7px 10px;background:var(--bg3);border:1.5px solid var(--purple);border-radius:8px;color:var(--text);font-family:inherit;font-size:.8rem;outline:none;">
           <button onclick="saveUrl('${id}')" style="padding:7px 12px;border-radius:8px;background:rgba(123,47,255,.2);border:1px solid var(--purple);color:var(--purple);font-family:inherit;font-weight:700;font-size:.8rem;cursor:pointer;">שמור</button>
@@ -1301,15 +1634,197 @@ async function openAdminPanel() {
           <button onclick="approveGame('${id}')" style="flex:1;padding:8px;border-radius:8px;background:rgba(0,230,118,.15);border:1px solid rgba(0,230,118,.35);color:#00e676;font-family:inherit;font-weight:700;font-size:.8rem;cursor:pointer;">✅ אשר</button>
           <button onclick="rejectGame('${id}')" style="flex:1;padding:8px;border-radius:8px;background:rgba(255,62,108,.12);border:1px solid rgba(255,62,108,.3);color:var(--accent);font-family:inherit;font-weight:700;font-size:.8rem;cursor:pointer;">❌ דחה</button>
           <button onclick="editUrl('${id}')" style="padding:8px 12px;border-radius:8px;background:rgba(123,47,255,.12);border:1px solid rgba(123,47,255,.3);color:var(--purple);font-family:inherit;font-weight:700;font-size:.8rem;cursor:pointer;">✏️ URL</button>
+          <button onclick="checkSavesAdmin('${id}','${g.url}')" id="saves_btn_${id}" style="padding:8px 12px;border-radius:8px;background:rgba(0,212,255,.1);border:1px solid rgba(0,212,255,.25);color:var(--blue);font-family:inherit;font-weight:700;font-size:.8rem;cursor:pointer;">💾 בדוק שמירה</button>
           <a href="${g.url}" target="_blank" rel="noopener" id="check_link_${id}" style="padding:8px 14px;border-radius:8px;background:var(--bg3);border:1px solid var(--border);color:var(--muted);font-family:inherit;font-weight:700;font-size:.8rem;cursor:pointer;text-decoration:none;">🔗 בדוק</a>
-        </div>
-      `;
+        </div>`;
       list.appendChild(card);
     });
   } catch(e) {
-    document.getElementById('adminPanelList').innerHTML = `<div style="color:var(--accent);text-align:center;">שגיאה: ${e.message}</div>`;
+    list.innerHTML = `<div style="color:var(--accent);text-align:center;">שגיאה: ${e.message}</div>`;
   }
 }
+
+async function loadAdminEdits() {
+  const list = document.getElementById('adminPanelList');
+  list.innerHTML = '<div style="text-align:center;color:var(--muted);padding:2rem;">⏳ טוען...</div>';
+  try {
+    const { db, collection, getDocs } = window._firebase;
+    const { query, where } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    const snap = await getDocs(query(collection(db, 'pending_edits'), where('status','==','pending')));
+    list.innerHTML = '';
+    if (snap.empty) {
+      document.getElementById('adminPanelCount').textContent = 'אין עריכות ממתינות 🎉';
+      list.innerHTML = '<div style="text-align:center;color:var(--muted);padding:2rem;font-size:2rem;">✅</div>';
+      return;
+    }
+    document.getElementById('adminPanelCount').textContent = `${snap.size} עריכות ממתינות`;
+
+    const FIELD_LABELS = {
+      name:'שם', url:'קישור', thumbnail:'תמונה', description:'תיאור',
+      tags:'תגיות', categories:'קטגוריות', platform:'פלטפורמה',
+      age:'גילאים', embeddable:'ניתן להטמעה', savesData:'שומר נתונים'
+    };
+
+    snap.forEach(docSnap => {
+      const e = docSnap.data(); const id = docSnap.id;
+      const origGame = allGames.find(g => (g.id||g.name) === e.gameId) || {};
+
+      const card = document.createElement('div');
+      card.id = 'edit_' + id;
+      card.className = 'edit-card';
+
+      const header = document.createElement('div');
+      header.innerHTML = `
+        <div style="font-weight:800;font-size:.92rem;">✏️ ${e.gameId}</div>
+        <div style="font-size:.7rem;color:var(--muted);margin-top:2px;">הוגש ע"י: ${e.submittedByEmail}</div>
+        ${e.reason ? `<div style="font-size:.72rem;color:var(--blue);margin-top:2px;">💬 ${e.reason}</div>` : ''}`;
+      card.appendChild(header);
+
+      if (e.isDelete) {
+        const delBanner = document.createElement('div');
+        delBanner.style.cssText = 'background:rgba(255,62,108,.12);border:1px solid rgba(255,62,108,.25);border-radius:8px;padding:8px 12px;font-size:.8rem;color:var(--accent);font-weight:700;';
+        delBanner.textContent = '🗑️ בקשת מחיקה של המשחק מהאתר';
+        card.appendChild(delBanner);
+      } else {
+        const fieldsWrap = document.createElement('div');
+        fieldsWrap.style.cssText = 'display:flex;flex-direction:column;gap:6px;margin-top:4px;';
+
+        const changedFields = Object.keys(e.changes || {});
+        if (!changedFields.length) {
+          fieldsWrap.innerHTML = '<div style="font-size:.78rem;color:var(--muted);">אין שינויים</div>';
+        } else {
+          changedFields.forEach(field => {
+            const label = FIELD_LABELS[field] || field;
+            const rawOrig = origGame[field];
+            const origVal = Array.isArray(rawOrig) ? rawOrig.join(', ') : String(rawOrig ?? '—');
+            const rawNew  = e.changes[field];
+            const newVal  = Array.isArray(rawNew) ? rawNew.join(', ') : String(rawNew ?? '');
+
+            const row = document.createElement('div');
+            row.style.cssText = 'display:flex;align-items:center;gap:8px;background:var(--bg);border-radius:8px;padding:7px 10px;border:1px solid var(--border);';
+            row.innerHTML = `
+              <label style="display:flex;align-items:center;cursor:pointer;flex-shrink:0;" title="${label} — לסמן = לאשר">
+                <input type="checkbox" class="field-approve-cb" data-field="${field}" data-editid="${id}"
+                       checked style="width:16px;height:16px;accent-color:#00e676;cursor:pointer;">
+              </label>
+              <div style="flex:1;min-width:0;">
+                <div style="font-size:.68rem;color:var(--muted);font-weight:800;margin-bottom:4px;letter-spacing:.3px;">${label.toUpperCase()}</div>
+                <div class="edit-diff">
+                  <div class="edit-diff-old" style="font-size:.72rem;">➖ ${origVal}</div>
+                  <div class="edit-diff-arrow">→</div>
+                  <div class="edit-diff-new" style="font-size:.72rem;">➕ ${newVal}</div>
+                </div>
+              </div>`;
+            fieldsWrap.appendChild(row);
+          });
+        }
+        card.appendChild(fieldsWrap);
+
+        const selectRow = document.createElement('div');
+        selectRow.style.cssText = 'display:flex;gap:6px;align-items:center;';
+        selectRow.innerHTML = `
+          <button onclick="toggleAllFields('${id}',true)"  style="font-size:.7rem;padding:3px 10px;border-radius:5px;border:1px solid rgba(0,230,118,.3);background:rgba(0,230,118,.08);color:#00e676;cursor:pointer;font-family:inherit;font-weight:700;">✔ הכל</button>
+          <button onclick="toggleAllFields('${id}',false)" style="font-size:.7rem;padding:3px 10px;border-radius:5px;border:1px solid rgba(255,62,108,.3);background:rgba(255,62,108,.08);color:var(--accent);cursor:pointer;font-family:inherit;font-weight:700;">✕ בטל הכל</button>
+          <span style="font-size:.68rem;color:var(--muted);">✅ מסומן = מאושר · ריק = נדחה</span>`;
+        card.appendChild(selectRow);
+      }
+
+      const actions = document.createElement('div');
+      actions.style.cssText = 'display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.25rem;';
+      actions.innerHTML = `
+        <button onclick="approveEdit('${id}')" style="flex:1;padding:8px;border-radius:8px;background:rgba(0,230,118,.15);border:1px solid rgba(0,230,118,.35);color:#00e676;font-family:inherit;font-weight:700;font-size:.8rem;cursor:pointer;">${e.isDelete ? '✅ אשר מחיקה' : '✅ החל נבחרים'}</button>
+        <button onclick="rejectEdit('${id}')" style="flex:1;padding:8px;border-radius:8px;background:rgba(255,62,108,.12);border:1px solid rgba(255,62,108,.3);color:var(--accent);font-family:inherit;font-weight:700;font-size:.8rem;cursor:pointer;">❌ דחה הכל</button>`;
+      card.appendChild(actions);
+
+      list.appendChild(card);
+    });
+  } catch(e) {
+    list.innerHTML = `<div style="color:var(--accent);text-align:center;">שגיאה: ${e.message}</div>`;
+  }
+}
+
+function toggleAllFields(editId, state) {
+  document.querySelectorAll(`[data-editid="${editId}"]`).forEach(cb => cb.checked = state);
+}
+window.toggleAllFields = toggleAllFields;
+
+async function approveEdit(editId) {
+  const card = document.getElementById('edit_' + editId);
+  card.style.opacity = '.5'; card.style.pointerEvents = 'none';
+  try {
+    const { db, doc, getDoc, setDoc } = window._firebase;
+    const { getDatabase, ref, set, remove, get } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js');
+
+    const snap = await getDoc(doc(db, 'pending_edits', editId));
+    const e = snap.data();
+    const rtdb = getDatabase();
+    const gameRef = ref(rtdb, `games/${e.gameId}`);
+
+    if (e.isDelete) {
+      await remove(gameRef);
+      const idx = allGames.findIndex(g => (g.id||g.name) === e.gameId);
+      if (idx !== -1) { allGames.splice(idx, 1); render(); }
+      showToast('🗑️ המשחק נמחק!', 'success');
+    } else {
+      const approvedFields = {};
+      card.querySelectorAll('.field-approve-cb:checked').forEach(cb => {
+        const field = cb.dataset.field;
+        if (e.changes && field in e.changes) approvedFields[field] = e.changes[field];
+      });
+
+      if (Object.keys(approvedFields).length === 0) {
+        await setDoc(doc(db, 'pending_edits', editId), { status: 'rejected' }, { merge: true });
+        card.remove();
+        showToast('❌ אף שדה לא נבחר — נדחה', '');
+        loadPendingCount();
+        return;
+      }
+
+      const gameSnap = await get(gameRef);
+      const existing = gameSnap.exists() ? gameSnap.val() : {};
+      await set(gameRef, { ...existing, ...approvedFields });
+
+      const idx = allGames.findIndex(g => (g.id||g.name) === e.gameId);
+      if (idx !== -1) { allGames[idx] = { ...allGames[idx], ...approvedFields }; render(); }
+
+      const total   = Object.keys(e.changes || {}).length;
+      const applied = Object.keys(approvedFields).length;
+      const skipped = total - applied;
+      showToast(`✅ ${applied} שדות אושרו${skipped > 0 ? ` · ${skipped} נדחו` : ''}`, 'success');
+    }
+
+    await setDoc(doc(db, 'pending_edits', editId), { status: 'approved' }, { merge: true });
+    card.remove();
+    loadPendingCount();
+    const remaining = document.querySelectorAll('#adminPanelList [id^="edit_"]').length;
+    if (remaining === 0) {
+      document.getElementById('adminPanelCount').textContent = 'אין עריכות ממתינות 🎉';
+      document.getElementById('adminPanelList').innerHTML = '<div style="text-align:center;color:var(--muted);padding:2rem;font-size:2rem;">✅</div>';
+    }
+  } catch(err) {
+    showToast('שגיאה: ' + err.message, 'error');
+    card.style.opacity='1'; card.style.pointerEvents='';
+  }
+}
+
+async function rejectEdit(editId) {
+  const card = document.getElementById('edit_' + editId);
+  card.style.opacity = '.5'; card.style.pointerEvents = 'none';
+  try {
+    const { db, doc, setDoc } = window._firebase;
+    await setDoc(doc(db, 'pending_edits', editId), { status: 'rejected' }, { merge: true });
+    card.remove();
+    showToast('❌ העריכה נדחתה', '');
+    loadPendingCount();
+  } catch(err) {
+    showToast('שגיאה: ' + err.message, 'error');
+    card.style.opacity='1'; card.style.pointerEvents='';
+  }
+}
+
+window.approveEdit = approveEdit;
+window.rejectEdit  = rejectEdit;
+window.switchAdminTab = switchAdminTab;
 
 function closeAdminPanel() {
   document.getElementById('adminPanelBg').classList.remove('open');
