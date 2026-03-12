@@ -363,7 +363,7 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:2rem 1.5
 
 <!-- SUBMIT GAME MODAL -->
 <div class="auth-modal-bg" id="submitGameBg" onclick="if(event.target===this)closeSubmitGame()">
-  <div class="auth-modal" style="max-width:460px;">
+  <div class="auth-modal" style="max-width:460px;max-height:90vh;overflow-y:auto;">
     <button class="auth-close" onclick="closeSubmitGame()">✕</button>
     <div class="auth-logo">
       <div class="al-icon" style="background:linear-gradient(135deg,var(--blue),var(--purple));box-shadow:0 0 24px rgba(0,212,255,.35);">➕</div>
@@ -415,33 +415,13 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:2rem 1.5
       <div class="auth-field">
         <label>טווח גילאים מתאים</label>
         <div style="display:flex;align-items:center;gap:8px;margin-top:4px;">
-          <select id="sg_age_from" style="flex:1;padding:9px 10px;background:var(--bg3);border:1.5px solid var(--border);border-radius:10px;color:var(--text);font-family:inherit;font-size:.85rem;outline:none;">
-            <option value="0">כל הגילאים</option>
-            <option value="5">5</option>
-            <option value="6">6</option>
-            <option value="7">7</option>
-            <option value="8">8</option>
-            <option value="10">10</option>
-            <option value="12">12</option>
-            <option value="14">14</option>
-            <option value="16">16</option>
-            <option value="18">18+</option>
-          </select>
+          <input type="number" id="sg_age_from" min="0" max="100" placeholder="0" value="0"
+                 style="flex:1;padding:9px 10px;background:var(--bg3);border:1.5px solid var(--border);border-radius:10px;color:var(--text);font-family:inherit;font-size:.88rem;outline:none;text-align:center;">
           <span style="color:var(--muted);font-size:.8rem;flex-shrink:0;">עד</span>
-          <select id="sg_age_to" style="flex:1;padding:9px 10px;background:var(--bg3);border:1.5px solid var(--border);border-radius:10px;color:var(--text);font-family:inherit;font-size:.85rem;outline:none;">
-            <option value="99">כל הגילאים</option>
-            <option value="7">7</option>
-            <option value="8">8</option>
-            <option value="10">10</option>
-            <option value="12">12</option>
-            <option value="14">14</option>
-            <option value="16">16</option>
-            <option value="18">18</option>
-            <option value="25">25</option>
-            <option value="99">מבוגרים</option>
-          </select>
+          <input type="number" id="sg_age_to" min="0" max="100" placeholder="100" value="100"
+                 style="flex:1;padding:9px 10px;background:var(--bg3);border:1.5px solid var(--border);border-radius:10px;color:var(--text);font-family:inherit;font-size:.88rem;outline:none;text-align:center;">
         </div>
-        <div style="font-size:.7rem;color:var(--muted);margin-top:4px;">למי המשחק הכי מעניין ומתאים</div>
+        <div style="font-size:.7rem;color:var(--muted);margin-top:4px;">למי המשחק הכי מעניין ומתאים (0–100)</div>
       </div>
       <div class="auth-field">
         <label>מזהה משחק (ID באנגלית) *</label>
@@ -458,6 +438,15 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:2rem 1.5
       <div class="auth-field">
         <label>תיאור קצר</label>
         <input type="text" id="sg_desc" placeholder="תיאור קצר של המשחק (אופציונלי)">
+      </div>
+
+      <div style="background:rgba(0,212,255,.07);border:1px solid rgba(0,212,255,.25);border-radius:10px;padding:10px 14px;margin-bottom:1rem;">
+        <div style="font-size:.75rem;font-weight:700;color:var(--blue);margin-bottom:6px;">☁️ רוצה שמירת נתונים בענן?</div>
+        <div style="font-size:.72rem;color:var(--muted);margin-bottom:8px;">אם אתה יצרת את המשחק, הוסף את השורה הזו ל-HTML שלך:</div>
+        <div style="display:flex;align-items:center;gap:6px;background:var(--bg);border-radius:7px;padding:7px 10px;border:1px solid var(--border);">
+          <code style="flex:1;font-size:.65rem;color:#00e676;word-break:break-all;line-height:1.4;">&lt;script type="module" src="https://giamatamat2013.github.io/Warp/firebase-ls-proxy.js"&gt;&lt;/script&gt;</code>
+          <button type="button" onclick="copyProxyScript(this)" style="flex-shrink:0;padding:5px 10px;border-radius:6px;background:rgba(0,212,255,.15);border:1px solid rgba(0,212,255,.3);color:var(--blue);font-family:inherit;font-size:.72rem;font-weight:700;cursor:pointer;transition:var(--t);">📋 העתק</button>
+        </div>
       </div>
       <button type="submit" class="auth-submit" id="submitGameBtn"
               style="background:linear-gradient(135deg,var(--blue),var(--purple));">
@@ -1184,9 +1173,9 @@ async function submitGame() {
   const desc  = document.getElementById('sg_desc').value.trim();
   const tagsRaw = document.getElementById('sg_tags').value.trim();
   const tags  = tagsRaw ? tagsRaw.split(',').map(t => t.trim()).filter(Boolean) : [];
-  const ageFrom = parseInt(document.getElementById('sg_age_from').value);
-  const ageTo   = parseInt(document.getElementById('sg_age_to').value);
-  const age = ageFrom === 0 && ageTo === 99 ? 'all' : `${ageFrom === 0 ? '0' : ageFrom}-${ageTo === 99 ? '+' : ageTo}`;
+  const ageFrom = parseInt(document.getElementById('sg_age_from').value) || 0;
+  const ageTo   = parseInt(document.getElementById('sg_age_to').value) || 100;
+  const age = ageFrom === 0 && ageTo === 100 ? 'all' : `${ageFrom}-${ageTo}`;
   const rawId = document.getElementById('sg_id').value.trim();
   const gameId = rawId || name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9\-]/g, '').replace(/-+/g, '-');
   const categories = [...document.querySelectorAll('#sg_cats_wrap input:checked')].map(i => i.value);
@@ -1235,6 +1224,24 @@ async function submitGame() {
 window.openSubmitGame  = openSubmitGame;
 window.closeSubmitGame = closeSubmitGame;
 window.submitGame      = submitGame;
+
+function copyProxyScript(btn) {
+  const text = '<script type="module" src="https://giamatamat2013.github.io/Warp/firebase-ls-proxy.js"><\/script>';
+  navigator.clipboard.writeText(text).then(() => {
+    const orig = btn.textContent;
+    btn.textContent = '✅ הועתק!';
+    btn.style.background = 'rgba(0,230,118,.2)';
+    btn.style.borderColor = 'rgba(0,230,118,.4)';
+    btn.style.color = '#00e676';
+    setTimeout(() => {
+      btn.textContent = orig;
+      btn.style.background = '';
+      btn.style.borderColor = '';
+      btn.style.color = '';
+    }, 2000);
+  });
+}
+window.copyProxyScript = copyProxyScript;
 
 // ── ADMIN PANEL ───────────────────────────────────────────
 async function loadPendingCount() {
