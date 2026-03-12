@@ -69,6 +69,7 @@ header{position:sticky;top:0;z-index:200;background:rgba(10,11,20,.9);backdrop-f
 .auth-modal-bg.open{display:flex;}
 .auth-modal{background:var(--bg2);border:1px solid rgba(123,47,255,.3);border-radius:20px;width:100%;max-width:400px;padding:2rem;animation:modalIn .25s ease;position:relative;}
 @keyframes modalIn{from{opacity:0;transform:scale(.94) translateY(16px);}to{opacity:1;transform:scale(1) translateY(0);}}
+@keyframes shake{0%,100%{transform:translateX(0);}20%{transform:translateX(-8px);}40%{transform:translateX(8px);}60%{transform:translateX(-5px);}80%{transform:translateX(5px);}}
 .auth-close{position:absolute;top:1rem;left:1rem;width:30px;height:30px;border-radius:8px;background:var(--card);border:1px solid var(--border);color:var(--muted);font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:var(--t);}
 .auth-close:hover{color:var(--accent);border-color:var(--accent);}
 .auth-logo{text-align:center;margin-bottom:1.5rem;}
@@ -203,6 +204,13 @@ main{max-width:1300px;margin:0 auto;padding:2rem 1.5rem 5rem;position:relative;z
 /* FOOTER */
 footer{background:var(--bg2);border-top:1px solid var(--border);padding:2rem 1.5rem;text-align:center;color:var(--muted);font-size:.78rem;position:relative;z-index:1;}
 
+/* ADMIN MODAL */
+.admin-badge{display:inline-flex;align-items:center;gap:4px;background:linear-gradient(135deg,rgba(255,204,0,.2),rgba(255,204,0,.08));border:1px solid rgba(255,204,0,.4);color:var(--gold);font-size:.65rem;font-weight:800;padding:2px 8px;border-radius:50px;letter-spacing:.5px;vertical-align:middle;margin-right:6px;}
+#userDropdown .ud-btn#udAdminBtn{color:var(--gold);}
+#userDropdown .ud-btn#udAdminBtn:hover{background:rgba(255,204,0,.1);color:var(--gold);}
+#udAdminBtn.is-admin{color:#00e676;}
+#udAdminBtn.is-admin:hover{background:rgba(0,230,118,.08);color:#00e676;}
+
 @media(max-width:600px){
   .hdr{padding:0 1rem;}
   .btn span{display:none;}
@@ -237,6 +245,7 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:2rem 1.5
             <div class="ud-email" id="udEmail">לא מחובר לחשבון</div>
           </div>
           <button class="ud-btn" id="udAuthBtn" onclick="openAuth()">🔑 התחברות / הרשמה</button>
+          <button class="ud-btn" id="udAdminBtn" onclick="openAdminModal()">🛡️ כניסת ADMIN</button>
           <button class="ud-btn danger" id="udSignout" onclick="signOutUser()" style="display:none">🚪 התנתקות</button>
         </div>
       </div>
@@ -350,7 +359,33 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:2rem 1.5
   </div>
 </div>
 
+<!-- ADMIN MODAL -->
+<div class="auth-modal-bg" id="adminModalBg" onclick="if(event.target===this)closeAdminModal()">
+  <div class="auth-modal" style="max-width:340px;">
+    <button class="auth-close" onclick="closeAdminModal()">✕</button>
+    <div class="auth-logo">
+      <div class="al-icon" style="background:linear-gradient(135deg,#b8860b,var(--gold));box-shadow:0 0 24px rgba(255,204,0,.35);">🛡️</div>
+      <h2>כניסת ADMIN</h2>
+      <p>הזן את קוד הגישה כדי לפעול כמנהל</p>
+    </div>
+    <div id="adminErr" class="auth-err"></div>
+    <form onsubmit="submitAdminPassword();return false;" autocomplete="off">
+      <div class="auth-field">
+        <label>סיסמת ADMIN</label>
+        <input type="password" id="adminPassInput" placeholder="••••••••" autocomplete="new-password"
+               style="letter-spacing:3px;font-size:1.1rem;"
+               oninput="document.getElementById('adminErr').style.display='none'">
+      </div>
+      <button type="submit" class="auth-submit" id="adminSubmitBtn"
+              style="background:linear-gradient(135deg,#b8860b,var(--gold));color:#000;font-weight:900;">
+        אישור
+      </button>
+    </form>
+  </div>
+</div>
+
 <!-- TOAST -->
+
 <div class="toast" id="toast"></div>
 
 <footer>
@@ -362,7 +397,8 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:2rem 1.5
 // These stubs ensure onclick= attributes don't throw before the Firebase module initialises.
 // The real implementations override them once the module is ready.
 ['openAuth','closeAuth','switchTab','toggleDropdown','signInWithGoogle',
- 'signInEmail','registerEmail','continueAnonymously','signOutUser','forgotPassword'
+ 'signInEmail','registerEmail','continueAnonymously','signOutUser','forgotPassword',
+ 'openAdminModal','closeAdminModal','submitAdminPassword'
 ].forEach(fn => {
   if (!window[fn]) window[fn] = (...args) => {
     // Queue the call until the real function is ready
@@ -496,6 +532,27 @@ onAuthStateChanged(auth, async user => {
     document.getElementById('headerAuthBtn').style.display = isAnon ? '' : 'none';
 
     logEvent(analytics, 'login', { method: isAnon ? 'anonymous' : user.providerData[0]?.providerId });
+
+    // check admin status for logged-in users only
+    if (!isAnon) {
+      try {
+        const snap = await getDoc(doc(db, 'admins', user.uid));
+        if (snap.exists() && snap.data()?.role === 'admin') {
+          window._isAdmin = true;
+          const btn = document.getElementById('udAdminBtn');
+          btn.textContent = '🛡️ ADMIN פעיל';
+          btn.classList.add('is-admin');
+          console.log('[WARP] Admin mode active ✅');
+        } else {
+          window._isAdmin = false;
+        }
+      } catch(e) {
+        window._isAdmin = false;
+        console.warn('[WARP] Admin check failed', e);
+      }
+    } else {
+      window._isAdmin = false;
+    }
   } else {
     // auto sign-in anonymously
     signInAnonymously(auth).catch(e => console.error('[WARP Auth]', e));
@@ -894,13 +951,46 @@ document.getElementById('searchInput').addEventListener('input', function(){
   }
 });
 
-window.openAuth = openAuth;
-window.closeAuth = closeAuth;
-window.switchTab = switchTab;
-window.toggleDropdown = toggleDropdown;
-window.showToast = showToast;
+// ── ADMIN ─────────────────────────────────────────────────
+async function checkIfAdmin(uid) {
+  try {
+    const { getFirestore, doc, getDoc } = window._firebase;
+    const db   = getFirestore ? getFirestore() : window._firebase.db;
+    const snap = await getDoc(doc(db, 'admins', uid));
+    if (snap.exists()) activateAdmin();
+  } catch(e) { console.warn('[WARP] Admin check failed', e); }
+}
+
+function activateAdmin() {
+  window._isAdmin = true;
+  const btn = document.getElementById('udAdminBtn');
+  btn.textContent = '🛡️ ADMIN פעיל';
+  btn.classList.add('is-admin');
+  console.log('[WARP] Admin mode active ✅');
+}
+
+function openAdminModal() {
+  closeDropdown();
+  if (window._isAdmin) { showToast('כבר מחובר כ-ADMIN 🛡️', 'success'); return; }
+  const user = window._currentUser;
+  if (!user || user.isAnonymous) {
+    showToast('יש להתחבר עם חשבון כדי להיות ADMIN', 'error'); return;
+  }
+  checkIfAdmin(user.uid).then(() => {
+    if (!window._isAdmin) showToast('החשבון הזה אינו ADMIN', 'error');
+    else showToast('ברוך הבא, ADMIN! 🛡️', 'success');
+  });
+}
+
+function closeAdminModal() {}
+function submitAdminPassword() {}
+
+window.openAdminModal      = openAdminModal;
+window.closeAdminModal     = closeAdminModal;
+window.submitAdminPassword = submitAdminPassword;
 
 load();
+
 </script>
 </body>
 </html>
