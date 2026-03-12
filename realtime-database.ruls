@@ -2,7 +2,7 @@
   "rules": {
     "games": {
       ".read": true,
-      ".write": false
+      ".write": "auth != null"
     }
   }
 }
