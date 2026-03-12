@@ -69,6 +69,7 @@ header{position:sticky;top:0;z-index:200;background:rgba(10,11,20,.9);backdrop-f
 .auth-modal-bg.open{display:flex;}
 .auth-modal{background:var(--bg2);border:1px solid rgba(123,47,255,.3);border-radius:20px;width:100%;max-width:400px;padding:2rem;animation:modalIn .25s ease;position:relative;}
 @keyframes modalIn{from{opacity:0;transform:scale(.94) translateY(16px);}to{opacity:1;transform:scale(1) translateY(0);}}
+@keyframes shake{0%,100%{transform:translateX(0);}20%{transform:translateX(-8px);}40%{transform:translateX(8px);}60%{transform:translateX(-5px);}80%{transform:translateX(5px);}}
 .auth-close{position:absolute;top:1rem;left:1rem;width:30px;height:30px;border-radius:8px;background:var(--card);border:1px solid var(--border);color:var(--muted);font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:var(--t);}
 .auth-close:hover{color:var(--accent);border-color:var(--accent);}
 .auth-logo{text-align:center;margin-bottom:1.5rem;}
@@ -124,10 +125,15 @@ main{max-width:1300px;margin:0 auto;padding:2rem 1.5rem 5rem;position:relative;z
 .card:hover{transform:translateY(-5px) scale(1.02);border-color:var(--purple);box-shadow:0 16px 40px rgba(0,0,0,.45),0 0 0 1px var(--purple),0 0 30px rgba(123,47,255,.2);}
 @keyframes fadeUp{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:translateY(0);}}
 .card-thumb{aspect-ratio:16/10;width:100%;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;}
-.card-thumb img{width:100%;height:100%;object-fit:cover;transition:var(--t);}
-.card:hover .card-thumb img{transform:scale(1.07);}
+.card-thumb img{width:100%;height:100%;object-fit:cover;transition:opacity var(--t),transform var(--t);opacity:0;}
+.card-thumb img.loaded{opacity:1;}
+.card:hover .card-thumb img.loaded{transform:scale(1.07);}
 .no-thumb{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:2.8rem;transition:var(--t);}
 .card:hover .no-thumb{transform:scale(1.1);}
+/* shimmer skeleton while image loads */
+.thumb-shimmer{position:absolute;inset:0;background:linear-gradient(90deg,var(--bg3) 25%,rgba(255,255,255,.06) 50%,var(--bg3) 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;}
+@keyframes shimmer{0%{background-position:200% 0;}100%{background-position:-200% 0;}}
+.card-thumb img.loaded ~ .thumb-shimmer,.card-thumb img.loaded + .thumb-shimmer{display:none;}
 .play-ov{position:absolute;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;opacity:0;transition:var(--t);backdrop-filter:blur(3px);}
 .card:hover .play-ov{opacity:1;}
 .play-circle{width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,var(--purple),var(--accent));display:flex;align-items:center;justify-content:center;font-size:1.2rem;color:#fff;box-shadow:0 0 24px rgba(255,62,108,.5);transform:scale(.8);transition:var(--t);}
@@ -198,6 +204,13 @@ main{max-width:1300px;margin:0 auto;padding:2rem 1.5rem 5rem;position:relative;z
 /* FOOTER */
 footer{background:var(--bg2);border-top:1px solid var(--border);padding:2rem 1.5rem;text-align:center;color:var(--muted);font-size:.78rem;position:relative;z-index:1;}
 
+/* ADMIN MODAL */
+.admin-badge{display:inline-flex;align-items:center;gap:4px;background:linear-gradient(135deg,rgba(255,204,0,.2),rgba(255,204,0,.08));border:1px solid rgba(255,204,0,.4);color:var(--gold);font-size:.65rem;font-weight:800;padding:2px 8px;border-radius:50px;letter-spacing:.5px;vertical-align:middle;margin-right:6px;}
+#userDropdown .ud-btn#udAdminBtn{color:var(--gold);}
+#userDropdown .ud-btn#udAdminBtn:hover{background:rgba(255,204,0,.1);color:var(--gold);}
+#udAdminBtn.is-admin{color:#00e676;}
+#udAdminBtn.is-admin:hover{background:rgba(0,230,118,.08);color:#00e676;}
+
 @media(max-width:600px){
   .hdr{padding:0 1rem;}
   .btn span{display:none;}
@@ -232,6 +245,9 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:2rem 1.5
             <div class="ud-email" id="udEmail">לא מחובר לחשבון</div>
           </div>
           <button class="ud-btn" id="udAuthBtn" onclick="openAuth()">🔑 התחברות / הרשמה</button>
+          <button class="ud-btn" id="udAdminBtn" onclick="openAdminModal()">🛡️ כניסת ADMIN</button>
+          <button class="ud-btn" id="udAdminPanelBtn" onclick="openAdminPanel()" style="display:none;color:var(--gold);">📋 בקשות ממתינות <span id="pendingBadge"></span></button>
+          <button class="ud-btn" onclick="openSubmitGame()" style="color:var(--blue);">➕ הגש משחק</button>
           <button class="ud-btn danger" id="udSignout" onclick="signOutUser()" style="display:none">🚪 התנתקות</button>
         </div>
       </div>
@@ -345,7 +361,142 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:2rem 1.5
   </div>
 </div>
 
+<!-- SUBMIT GAME MODAL -->
+<div class="auth-modal-bg" id="submitGameBg" onclick="if(event.target===this)closeSubmitGame()">
+  <div class="auth-modal" style="max-width:460px;max-height:90vh;overflow-y:auto;">
+    <button class="auth-close" onclick="closeSubmitGame()">✕</button>
+    <div class="auth-logo">
+      <div class="al-icon" style="background:linear-gradient(135deg,var(--blue),var(--purple));box-shadow:0 0 24px rgba(0,212,255,.35);">➕</div>
+      <h2>הגש משחק חדש</h2>
+      <p>המשחק יישלח לאישור אדמין לפני שיופיע באתר</p>
+    </div>
+    <div id="submitGameErr" class="auth-err"></div>
+    <div id="submitGameSuccess" style="display:none;background:rgba(0,230,118,.1);border:1px solid rgba(0,230,118,.3);border-radius:8px;padding:10px 14px;font-size:.82rem;color:#00e676;margin-bottom:.75rem;text-align:center;">
+      ✅ המשחק נשלח לאישור! תודה 🎮
+    </div>
+    <form id="submitGameForm" onsubmit="submitGame();return false;" autocomplete="off">
+      <div class="auth-field">
+        <label>שם המשחק *</label>
+        <input type="text" id="sg_name" placeholder="למשל: Super Mario" required>
+      </div>
+      <div class="auth-field">
+        <label>קישור למשחק (URL) *</label>
+        <input type="url" id="sg_url" placeholder="https://..." required>
+      </div>
+      <div class="auth-field">
+        <label>תמונה ממוזערת (URL)</label>
+        <input type="url" id="sg_thumb" placeholder="https://... (אופציונלי)">
+      </div>
+      <div class="auth-field">
+        <label>קטגוריות (ניתן לבחור כמה)</label>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:4px;" id="sg_cats_wrap">
+          <label style="font-size:.75rem;font-weight:600;color:var(--text);display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" value="action"> ⚡ פעולה</label>
+          <label style="font-size:.75rem;font-weight:600;color:var(--text);display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" value="puzzle"> 🧩 פאזל</label>
+          <label style="font-size:.75rem;font-weight:600;color:var(--text);display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" value="arcade"> 👾 ארקייד</label>
+          <label style="font-size:.75rem;font-weight:600;color:var(--text);display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" value="racing"> 🏎️ מירוצים</label>
+          <label style="font-size:.75rem;font-weight:600;color:var(--text);display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" value="rpg"> ⚔️ RPG</label>
+          <label style="font-size:.75rem;font-weight:600;color:var(--text);display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" value="strategy"> ♟️ אסטרטגיה</label>
+          <label style="font-size:.75rem;font-weight:600;color:var(--text);display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" value="sports"> ⚽ ספורט</label>
+          <label style="font-size:.75rem;font-weight:600;color:var(--text);display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" value="shooter"> 🔫 יריות</label>
+          <label style="font-size:.75rem;font-weight:600;color:var(--text);display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" value="board"> 🎲 לוח</label>
+          <label style="font-size:.75rem;font-weight:600;color:var(--text);display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" value="survival"> 💀 הישרדות</label>
+          <label style="font-size:.75rem;font-weight:600;color:var(--text);display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" value="casual"> 🌟 כיפי</label>
+          <label style="font-size:.75rem;font-weight:600;color:var(--text);display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" value="adventure"> 🗺️ הרפתקה</label>
+          <label style="font-size:.75rem;font-weight:600;color:var(--text);display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" value="multiplayer"> 👥 מרובה שחקנים</label>
+        </div>
+      </div>
+      <div class="auth-field">
+        <label>פלטפורמה</label>
+        <div style="display:flex;gap:12px;margin-top:4px;">
+          <label style="font-size:.75rem;font-weight:600;color:var(--text);display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" value="desktop" id="sg_plat_desktop" checked> 🖥️ מחשב</label>
+          <label style="font-size:.75rem;font-weight:600;color:var(--text);display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" value="mobile" id="sg_plat_mobile" checked> 📱 נייד</label>
+        </div>
+      </div>
+      <div class="auth-field">
+        <label>טווח גילאים מתאים</label>
+        <div style="display:flex;align-items:center;gap:8px;margin-top:4px;">
+          <input type="number" id="sg_age_from" min="0" max="100" placeholder="0" value="0"
+                 style="flex:1;padding:9px 10px;background:var(--bg3);border:1.5px solid var(--border);border-radius:10px;color:var(--text);font-family:inherit;font-size:.88rem;outline:none;text-align:center;">
+          <span style="color:var(--muted);font-size:.8rem;flex-shrink:0;">עד</span>
+          <input type="number" id="sg_age_to" min="0" max="100" placeholder="100" value="100"
+                 style="flex:1;padding:9px 10px;background:var(--bg3);border:1.5px solid var(--border);border-radius:10px;color:var(--text);font-family:inherit;font-size:.88rem;outline:none;text-align:center;">
+        </div>
+        <div style="font-size:.7rem;color:var(--muted);margin-top:4px;">למי המשחק הכי מעניין ומתאים (0–100)</div>
+      </div>
+      <div class="auth-field">
+        <label>מזהה משחק (ID באנגלית) *</label>
+        <input type="text" id="sg_id" placeholder="למשל: backgammon, chess-online" 
+               pattern="[a-z0-9\-]+" title="אותיות קטנות באנגלית, מספרים ומקף בלבד"
+               oninput="this.value=this.value.toLowerCase().replace(/[^a-z0-9\-]/g,'-').replace(/-+/g,'-')"
+               style="font-family:monospace;letter-spacing:.5px;">
+        <div style="font-size:.7rem;color:var(--muted);margin-top:4px;">אותיות קטנות + מקף בלבד · ייוצר אוטומטית משם המשחק אם ריק</div>
+      </div>
+      <div class="auth-field">
+        <label>תגיות (מופרדות בפסיק)</label>
+        <input type="text" id="sg_tags" placeholder="למשל: כיפי, קלאסי, single player">
+      </div>
+      <div class="auth-field">
+        <label>תיאור קצר</label>
+        <input type="text" id="sg_desc" placeholder="תיאור קצר של המשחק (אופציונלי)">
+      </div>
+
+      <div style="background:rgba(0,212,255,.07);border:1px solid rgba(0,212,255,.25);border-radius:10px;padding:10px 14px;margin-bottom:1rem;">
+        <div style="font-size:.75rem;font-weight:700;color:var(--blue);margin-bottom:6px;">☁️ רוצה שמירת נתונים בענן?</div>
+        <div style="font-size:.72rem;color:var(--muted);margin-bottom:8px;">אם אתה יצרת את המשחק, הוסף את השורה הזו ל-HTML שלך:</div>
+        <div style="display:flex;align-items:center;gap:6px;background:var(--bg);border-radius:7px;padding:7px 10px;border:1px solid var(--border);">
+          <code style="flex:1;font-size:.65rem;color:#00e676;word-break:break-all;line-height:1.4;">&lt;script type="module" src="https://giamatamat2013.github.io/Warp/firebase-ls-proxy.js"&gt;&lt;/script&gt;</code>
+          <button type="button" onclick="copyProxyScript(this)" style="flex-shrink:0;padding:5px 10px;border-radius:6px;background:rgba(0,212,255,.15);border:1px solid rgba(0,212,255,.3);color:var(--blue);font-family:inherit;font-size:.72rem;font-weight:700;cursor:pointer;transition:var(--t);">📋 העתק</button>
+        </div>
+      </div>
+      <button type="submit" class="auth-submit" id="submitGameBtn"
+              style="background:linear-gradient(135deg,var(--blue),var(--purple));">
+        שלח לאישור ➤
+      </button>
+    </form>
+  </div>
+</div>
+
+<!-- ADMIN PANEL MODAL -->
+<div class="auth-modal-bg" id="adminPanelBg" onclick="if(event.target===this)closeAdminPanel()">
+  <div class="auth-modal" style="max-width:680px;max-height:85vh;overflow-y:auto;">
+    <button class="auth-close" onclick="closeAdminPanel()">✕</button>
+    <div class="auth-logo">
+      <div class="al-icon" style="background:linear-gradient(135deg,#b8860b,var(--gold));">🛡️</div>
+      <h2>פאנל אדמין</h2>
+      <p id="adminPanelCount">טוען בקשות...</p>
+    </div>
+    <div id="adminPanelList" style="display:flex;flex-direction:column;gap:.75rem;"></div>
+  </div>
+</div>
+
+<!-- ADMIN MODAL -->
+
+<div class="auth-modal-bg" id="adminModalBg" onclick="if(event.target===this)closeAdminModal()">
+  <div class="auth-modal" style="max-width:340px;">
+    <button class="auth-close" onclick="closeAdminModal()">✕</button>
+    <div class="auth-logo">
+      <div class="al-icon" style="background:linear-gradient(135deg,#b8860b,var(--gold));box-shadow:0 0 24px rgba(255,204,0,.35);">🛡️</div>
+      <h2>כניסת ADMIN</h2>
+      <p>הזן את קוד הגישה כדי לפעול כמנהל</p>
+    </div>
+    <div id="adminErr" class="auth-err"></div>
+    <form onsubmit="submitAdminPassword();return false;" autocomplete="off">
+      <div class="auth-field">
+        <label>סיסמת ADMIN</label>
+        <input type="password" id="adminPassInput" placeholder="••••••••" autocomplete="new-password"
+               style="letter-spacing:3px;font-size:1.1rem;"
+               oninput="document.getElementById('adminErr').style.display='none'">
+      </div>
+      <button type="submit" class="auth-submit" id="adminSubmitBtn"
+              style="background:linear-gradient(135deg,#b8860b,var(--gold));color:#000;font-weight:900;">
+        אישור
+      </button>
+    </form>
+  </div>
+</div>
+
 <!-- TOAST -->
+
 <div class="toast" id="toast"></div>
 
 <footer>
@@ -357,7 +508,8 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:2rem 1.5
 // These stubs ensure onclick= attributes don't throw before the Firebase module initialises.
 // The real implementations override them once the module is ready.
 ['openAuth','closeAuth','switchTab','toggleDropdown','signInWithGoogle',
- 'signInEmail','registerEmail','continueAnonymously','signOutUser','forgotPassword'
+ 'signInEmail','registerEmail','continueAnonymously','signOutUser','forgotPassword',
+ 'openAdminModal','closeAdminModal','submitAdminPassword'
 ].forEach(fn => {
   if (!window[fn]) window[fn] = (...args) => {
     // Queue the call until the real function is ready
@@ -491,6 +643,28 @@ onAuthStateChanged(auth, async user => {
     document.getElementById('headerAuthBtn').style.display = isAnon ? '' : 'none';
 
     logEvent(analytics, 'login', { method: isAnon ? 'anonymous' : user.providerData[0]?.providerId });
+
+    // check admin status for logged-in users only
+    if (!isAnon) {
+      try {
+        const snap = await getDoc(doc(db, 'admins', user.uid));
+        if (snap.exists() && snap.data()?.role === 'admin') {
+          // activateAdmin may be defined in a later script — wait for it
+          const doActivate = () => {
+            if (typeof activateAdmin === 'function') activateAdmin();
+            else setTimeout(doActivate, 50);
+          };
+          doActivate();
+        } else {
+          window._isAdmin = false;
+        }
+      } catch(e) {
+        window._isAdmin = false;
+        console.warn('[WARP] Admin check failed', e);
+      }
+    } else {
+      window._isAdmin = false;
+    }
   } else {
     // auto sign-in anonymously
     signInAnonymously(auth).catch(e => console.error('[WARP Auth]', e));
@@ -620,18 +794,67 @@ let allGames = [], currentCat = 'all', currentSearch = '';
 
 async function load() {
   try {
-    // Wait for the Firebase module to finish initialising if needed
     if (!window._firebase) {
       await new Promise(res => document.addEventListener('_warpReady', res, { once: true }));
     }
     const { rtdb, ref, get } = window._firebase;
-    const snap = await get(ref(rtdb, 'games'));
-    if (!snap.exists()) throw new Error('אין נתונים ב-Realtime Database תחת /games');
-    const val = snap.val();
-    allGames = Array.isArray(val)
-      ? val.filter(Boolean)
-      : Object.values(val);
+
+    // Load games + weekly open counts in parallel
+    const [gamesSnap, opensSnap] = await Promise.all([
+      get(ref(rtdb, 'games')),
+      get(ref(rtdb, 'game_opens')).catch(() => null),
+    ]);
+
+    if (!gamesSnap.exists()) throw new Error('אין נתונים ב-Realtime Database תחת /games');
+    const val = gamesSnap.val();
+    allGames = Array.isArray(val) ? val.filter(Boolean) : Object.values(val);
     if (!allGames.length) throw new Error('רשימת המשחקים ריקה');
+
+    // Compute weekly open counts per game
+    const weeklyCounts = {};
+    if (opensSnap && opensSnap.exists()) {
+      const weekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
+      const opensData = opensSnap.val();
+      Object.entries(opensData).forEach(([gameId, days]) => {
+        if (typeof days !== 'object') return;
+        let total = 0;
+        Object.entries(days).forEach(([dayKey, count]) => {
+          // dayKey format: "YYYY-MM-DD"
+          if (new Date(dayKey).getTime() >= weekAgo) total += (count || 0);
+        });
+        weeklyCounts[gameId] = total;
+      });
+    }
+
+    // Mark top 5 as hot (only if they have at least 1 open this week)
+    const sorted = Object.entries(weeklyCounts)
+      .filter(([,v]) => v > 0)
+      .sort(([,a],[,b]) => b - a)
+      .slice(0, 5)
+      .map(([id]) => id);
+
+    const hotSet = new Set(sorted);
+
+    // Patch games
+    const THUMBS = {
+      '2048':                'https://opengraph.githubassets.com/ad5a93a80b5ca3d43a5946ed078d5a34b5e27a83070a5a117815a64ea46c56c8/giamat13/2048',
+      'snake':               'https://opengraph.githubassets.com/28281394f5226de94d119f2b8e3f4f298eb681b9657147a257c2a513cbce732d/giamat13/snake',
+      'tetris':              'https://opengraph.githubassets.com/ee874d2a191235974887753d48dfb3c394e7c63cccbb93fa87d6da730be460a7/giamat13/tetris',
+      'space-game':          'https://opengraph.githubassets.com/231bd98c86ba303829ff4da41c09323fcae5b2503e3f43872245a2c92b5b0bb3/giamat13/space-game',
+      'rock-paper-scissors': 'https://opengraph.githubassets.com/5ff234a29b4d260a66592a65472c850e10e3489a78b003e173837f2df7a96f54/giamatamat2013/Rock-Paper-Scissors',
+      'land-and-city-online':'https://opengraph.githubassets.com/1977d41737431b01e06e87337592c147df09217c891a73521c3b0c1dca0553ef/giamat13/LandAndCityOnline',
+      'moto-x3m':            'https://images.cdn.famobi.com/portal/html5games/images/tmp/MotoX3mTeaser.jpg',
+      'temple-run':          'https://img.gamemonetize.co/pkyyuilfrqkcdnmrxsg60j22ypk0peje/512x384.jpg',
+      'pong':                'https://img.gamedistribution.com/a4c67fbbc9bb4d70a26a85a91e5d12cc/512x384.jpg',
+      'subway-surfers':      'https://i.gamesgo.net/uploads/game/html5/25434/thumbnail.jpg',
+    };
+    allGames.forEach(g => {
+      if (!g.thumbnail && THUMBS[g.id]) g.thumbnail = THUMBS[g.id];
+      // Remove static hot badge, replace with dynamic
+      if (g.badge === 'hot') delete g.badge;
+      if (hotSet.has(g.id)) g.badge = 'hot';
+    });
+
     init();
   } catch(e) {
     document.getElementById('loadingState').style.display = 'none';
@@ -732,14 +955,21 @@ function buildCard(game) {
   const thumb = document.createElement('div'); thumb.className = 'card-thumb';
   thumb.style.background = 'linear-gradient(135deg,'+color+'22,'+color+'08)';
   if (game.thumbnail) {
-    const img = document.createElement('img'); img.src = game.thumbnail; img.alt = game.name;
-    img.onerror = () => img.replaceWith(noThumb(game, color));
+    const shimmer = document.createElement('div'); shimmer.className = 'thumb-shimmer';
+    const img = document.createElement('img');
+    img.src = game.thumbnail; img.alt = game.name; img.loading = 'lazy';
+    img.onload  = () => { img.classList.add('loaded'); shimmer.remove(); };
+    img.onerror = () => { img.remove(); shimmer.remove(); thumb.appendChild(noThumb(game, color)); };
     thumb.appendChild(img);
+    thumb.appendChild(shimmer);
   } else { thumb.appendChild(noThumb(game, color)); }
-  if (game.badge) {
+  const ONE_WEEK = 7 * 24 * 60 * 60 * 1000;
+  const isNew = game.addedAt && (Date.now() - game.addedAt) < ONE_WEEK;
+  const badge = isNew ? 'new' : (game.badge || null);
+  if (badge) {
     const b = document.createElement('span');
-    b.className = 'badge badge-'+game.badge;
-    b.textContent = game.badge==='new'?'✨ חדש':game.badge==='hot'?'🔥 HOT':'👑 TOP';
+    b.className = 'badge badge-'+badge;
+    b.textContent = badge==='new'?'✨ חדש':badge==='hot'?'🔥 HOT':'👑 TOP';
     thumb.appendChild(b);
   }
   // embeddable indicator top-left
@@ -787,6 +1017,10 @@ function noThumb(game, color) {
 }
 
 function openGame(game) {
+  _openGameAsync(game);
+}
+
+async function _openGameAsync(game) {
   const bg = document.getElementById('modalBg');
   document.getElementById('modalTitle').textContent = game.name;
   document.getElementById('modalOpenLink').href = game.url;
@@ -819,10 +1053,29 @@ function openGame(game) {
   iframe.onerror = showErr;
   bg.classList.add('open'); document.body.style.overflow='hidden';
 
-  // analytics
-  if (window._firebase) {
-    window._firebase.logEvent(window._firebase.analytics, 'game_open', { game_id: game.id, game_name: game.name });
+  // ── Analytics: gtag + Firebase ──
+  const analyticsData = {
+    game_id:       game.id || game.name,
+    game_name:     game.name,
+    game_category: (game.categories||[])[0] || 'unknown',
+    game_age:      game.age || 'all',
+  };
+  if (typeof gtag === 'function') {
+    gtag('event', 'game_open', analyticsData);
   }
+  if (window._firebase) {
+    window._firebase.logEvent(window._firebase.analytics, 'game_open', analyticsData);
+  }
+
+  // ── Count opens in RTDB for hot badge ──
+  try {
+    const { rtdb } = window._firebase;
+    const { ref, runTransaction } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js');
+    const today = new Date().toISOString().slice(0, 10); // "YYYY-MM-DD"
+    const gameKey = (game.id || game.name).replace(/[.#$[\]]/g, '_');
+    const countRef = ref(rtdb, `game_opens/${gameKey}/${today}`);
+    runTransaction(countRef, cur => (cur || 0) + 1);
+  } catch(e) { console.warn('[WARP] open counter error', e); }
 }
 
 function showErr() { document.getElementById('modalIframe').style.display='none'; document.getElementById('modalErr').style.display='flex'; }
@@ -871,13 +1124,321 @@ document.getElementById('searchInput').addEventListener('input', function(){
   }
 });
 
-window.openAuth = openAuth;
-window.closeAuth = closeAuth;
-window.switchTab = switchTab;
-window.toggleDropdown = toggleDropdown;
-window.showToast = showToast;
+// ── ADMIN ─────────────────────────────────────────────────
+async function checkIfAdmin(uid) {
+  try {
+    const { getFirestore, doc, getDoc } = window._firebase;
+    const db   = getFirestore ? getFirestore() : window._firebase.db;
+    const snap = await getDoc(doc(db, 'admins', uid));
+    if (snap.exists()) activateAdmin();
+  } catch(e) { console.warn('[WARP] Admin check failed', e); }
+}
+
+function activateAdmin() {
+  window._isAdmin = true;
+  const btn = document.getElementById('udAdminBtn');
+  btn.textContent = '🛡️ ADMIN פעיל';
+  btn.classList.add('is-admin');
+  document.getElementById('udAdminPanelBtn').style.display = '';
+  loadPendingCount();
+  console.log('[WARP] Admin mode active ✅');
+}
+
+// ── SUBMIT GAME ───────────────────────────────────────────
+function openSubmitGame() {
+  closeDropdown();
+  document.getElementById('submitGameErr').style.display = 'none';
+  document.getElementById('submitGameSuccess').style.display = 'none';
+  document.getElementById('submitGameForm').style.display = '';
+  document.getElementById('submitGameBg').classList.add('open');
+}
+function closeSubmitGame() {
+  document.getElementById('submitGameBg').classList.remove('open');
+}
+
+async function checkSavesData(url) {
+  try {
+    const res = await fetch(url, { mode: 'cors' });
+    const html = await res.text();
+    return html.includes('firebase-ls-proxy.js');
+  } catch(e) {
+    return false; // אם לא ניתן לטעון — מניחים שלא
+  }
+}
+
+async function submitGame() {
+  const name  = document.getElementById('sg_name').value.trim();
+  const url   = document.getElementById('sg_url').value.trim();
+  const thumb = document.getElementById('sg_thumb').value.trim();
+  const desc  = document.getElementById('sg_desc').value.trim();
+  const tagsRaw = document.getElementById('sg_tags').value.trim();
+  const tags  = tagsRaw ? tagsRaw.split(',').map(t => t.trim()).filter(Boolean) : [];
+  const ageFrom = parseInt(document.getElementById('sg_age_from').value) || 0;
+  const ageTo   = parseInt(document.getElementById('sg_age_to').value) || 100;
+  const age = ageFrom === 0 && ageTo === 100 ? 'all' : `${ageFrom}-${ageTo}`;
+  const rawId = document.getElementById('sg_id').value.trim();
+  const gameId = rawId || name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9\-]/g, '').replace(/-+/g, '-');
+  const categories = [...document.querySelectorAll('#sg_cats_wrap input:checked')].map(i => i.value);
+  const platform = [];
+  if (document.getElementById('sg_plat_desktop').checked) platform.push('desktop');
+  if (document.getElementById('sg_plat_mobile').checked) platform.push('mobile');
+
+  const errEl = document.getElementById('submitGameErr');
+  const btn   = document.getElementById('submitGameBtn');
+
+  if (!name || !url) { errEl.textContent = 'שם וקישור הם שדות חובה'; errEl.style.display=''; return; }
+  if (!categories.length) { errEl.textContent = 'בחר לפחות קטגוריה אחת'; errEl.style.display=''; return; }
+
+  btn.disabled = true; btn.textContent = 'בודק משחק...';
+  try {
+    const savesData = await checkSavesData(url);
+    const { db, collection } = window._firebase;
+    const { addDoc, serverTimestamp } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    const user = window._currentUser;
+    await addDoc(collection(db, 'pending_games'), {
+      name, url,
+      id: gameId,
+      thumbnail: thumb || '',
+      categories,
+      tags,
+      platform: platform.length ? platform : ['desktop','mobile'],
+      description: desc,
+      age,
+      savesData,
+      embeddable: true,
+      submittedBy: user?.uid || 'anonymous',
+      submittedByEmail: user?.email || 'אנונימי',
+      status: 'pending',
+      createdAt: serverTimestamp(),
+    });
+    document.getElementById('submitGameForm').style.display = 'none';
+    document.getElementById('submitGameSuccess').style.display = '';
+    setTimeout(closeSubmitGame, 2500);
+  } catch(e) {
+    errEl.textContent = 'שגיאה בשליחה: ' + e.message;
+    errEl.style.display = '';
+  }
+  btn.disabled = false; btn.textContent = 'שלח לאישור ➤';
+}
+
+window.openSubmitGame  = openSubmitGame;
+window.closeSubmitGame = closeSubmitGame;
+window.submitGame      = submitGame;
+
+function copyProxyScript(btn) {
+  const text = '<script type="module" src="https://giamatamat2013.github.io/Warp/firebase-ls-proxy.js"><\/script>';
+  navigator.clipboard.writeText(text).then(() => {
+    const orig = btn.textContent;
+    btn.textContent = '✅ הועתק!';
+    btn.style.background = 'rgba(0,230,118,.2)';
+    btn.style.borderColor = 'rgba(0,230,118,.4)';
+    btn.style.color = '#00e676';
+    setTimeout(() => {
+      btn.textContent = orig;
+      btn.style.background = '';
+      btn.style.borderColor = '';
+      btn.style.color = '';
+    }, 2000);
+  });
+}
+window.copyProxyScript = copyProxyScript;
+
+// ── ADMIN PANEL ───────────────────────────────────────────
+async function loadPendingCount() {
+  try {
+    const { db, collection, getDocs } = window._firebase;
+    const { query, where } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    const snap = await getDocs(query(collection(db, 'pending_games'), where('status','==','pending')));
+    const count = snap.size;
+    document.getElementById('pendingBadge').textContent = count > 0 ? `(${count})` : '';
+  } catch(e) {}
+}
+
+async function openAdminPanel() {
+  closeDropdown();
+  if (!window._isAdmin) return;
+  document.getElementById('adminPanelList').innerHTML = '<div style="text-align:center;color:var(--muted);padding:2rem;">⏳ טוען...</div>';
+  document.getElementById('adminPanelBg').classList.add('open');
+
+  try {
+    const { db, collection, getDocs, doc, setDoc, deleteDoc } = window._firebase;
+    const { query, where, addDoc, serverTimestamp } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    const snap = await getDocs(query(collection(db, 'pending_games'), where('status','==','pending')));
+
+    const list = document.getElementById('adminPanelList');
+    list.innerHTML = '';
+
+    if (snap.empty) {
+      document.getElementById('adminPanelCount').textContent = 'אין בקשות ממתינות 🎉';
+      list.innerHTML = '<div style="text-align:center;color:var(--muted);padding:2rem;font-size:2rem;">✅</div>';
+      return;
+    }
+
+    document.getElementById('adminPanelCount').textContent = `${snap.size} בקשות ממתינות לאישור`;
+
+    snap.forEach(docSnap => {
+      const g = docSnap.data();
+      const id = docSnap.id;
+      const card = document.createElement('div');
+      card.id = 'pending_' + id;
+      card.style.cssText = 'background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1rem;display:flex;flex-direction:column;gap:.5rem;';
+      card.innerHTML = `
+        <div style="display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;">
+          ${g.thumbnail ? `<img src="${g.thumbnail}" style="width:80px;height:50px;object-fit:cover;border-radius:7px;flex-shrink:0;" onerror="this.style.display='none'">` : '<div style="width:80px;height:50px;background:var(--bg3);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;">🎮</div>'}
+          <div style="flex:1;min-width:0;">
+            <div style="font-weight:800;font-size:.95rem;">${g.name}</div>
+            <a href="${g.url}" target="_blank" rel="noopener" id="url_display_${id}" style="font-size:.72rem;color:var(--blue);margin-top:2px;display:block;word-break:break-all;text-decoration:none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">${g.url}</a>
+            <div style="font-size:.7rem;color:var(--muted);margin-top:2px;">הוגש על ידי: ${g.submittedByEmail} · קטגוריה: ${g.categories?.[0]||'—'} · שמירה: <span style="color:${g.savesData ? '#00e676' : 'var(--muted)'};">${g.savesData ? '☁️ כן' : '💾 לא'}</span></div>
+          </div>
+        </div>
+        ${g.description ? `<div style="font-size:.78rem;color:var(--muted);">${g.description}</div>` : ''}
+        <div id="url_edit_row_${id}" style="display:none;gap:.5rem;align-items:center;">
+          <input id="url_input_${id}" value="${g.url}" style="flex:1;padding:7px 10px;background:var(--bg3);border:1.5px solid var(--purple);border-radius:8px;color:var(--text);font-family:inherit;font-size:.8rem;outline:none;">
+          <button onclick="saveUrl('${id}')" style="padding:7px 12px;border-radius:8px;background:rgba(123,47,255,.2);border:1px solid var(--purple);color:var(--purple);font-family:inherit;font-weight:700;font-size:.8rem;cursor:pointer;">שמור</button>
+          <button onclick="cancelEditUrl('${id}')" style="padding:7px 12px;border-radius:8px;background:var(--bg3);border:1px solid var(--border);color:var(--muted);font-family:inherit;font-weight:700;font-size:.8rem;cursor:pointer;">ביטול</button>
+        </div>
+        <div style="display:flex;gap:.5rem;margin-top:.25rem;flex-wrap:wrap;">
+          <button onclick="approveGame('${id}')" style="flex:1;padding:8px;border-radius:8px;background:rgba(0,230,118,.15);border:1px solid rgba(0,230,118,.35);color:#00e676;font-family:inherit;font-weight:700;font-size:.8rem;cursor:pointer;">✅ אשר</button>
+          <button onclick="rejectGame('${id}')" style="flex:1;padding:8px;border-radius:8px;background:rgba(255,62,108,.12);border:1px solid rgba(255,62,108,.3);color:var(--accent);font-family:inherit;font-weight:700;font-size:.8rem;cursor:pointer;">❌ דחה</button>
+          <button onclick="editUrl('${id}')" style="padding:8px 12px;border-radius:8px;background:rgba(123,47,255,.12);border:1px solid rgba(123,47,255,.3);color:var(--purple);font-family:inherit;font-weight:700;font-size:.8rem;cursor:pointer;">✏️ URL</button>
+          <a href="${g.url}" target="_blank" rel="noopener" id="check_link_${id}" style="padding:8px 14px;border-radius:8px;background:var(--bg3);border:1px solid var(--border);color:var(--muted);font-family:inherit;font-weight:700;font-size:.8rem;cursor:pointer;text-decoration:none;">🔗 בדוק</a>
+        </div>
+      `;
+      list.appendChild(card);
+    });
+  } catch(e) {
+    document.getElementById('adminPanelList').innerHTML = `<div style="color:var(--accent);text-align:center;">שגיאה: ${e.message}</div>`;
+  }
+}
+
+function closeAdminPanel() {
+  document.getElementById('adminPanelBg').classList.remove('open');
+}
+
+async function approveGame(pendingId) {
+  const card = document.getElementById('pending_' + pendingId);
+  card.style.opacity = '.5'; card.style.pointerEvents = 'none';
+  try {
+    const { db, doc, getDoc, setDoc, deleteDoc } = window._firebase;
+    const { serverTimestamp } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    const { getDatabase, ref, push, set } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js');
+
+    // Get pending game data
+    const snap = await getDoc(doc(db, 'pending_games', pendingId));
+    const g = snap.data();
+
+    // Push to Realtime Database under /games using game's own id
+    const rtdb = getDatabase();
+    const { set: rtdbSet } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js');
+    const gameKey = (g.id || g.name.toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9\-]/g,''));
+    const gameRef = ref(rtdb, `games/${gameKey}`);
+    await set(gameRef, {
+      id: gameKey,
+      name: g.name,
+      url: g.url,
+      thumbnail: g.thumbnail || '',
+      categories: g.categories || ['casual'],
+      tags: g.tags || [],
+      platform: g.platform || ['desktop','mobile'],
+      description: g.description || '',
+      age: g.age || 'all',
+      savesData: g.savesData || false,
+      embeddable: true,
+      addedAt: Date.now(),
+    });
+
+    // Mark as approved in Firestore
+    await setDoc(doc(db, 'pending_games', pendingId), { status: 'approved' }, { merge: true });
+
+    card.remove();
+    showToast(`✅ "${g.name}" אושר ונוסף לאתר!`, 'success');
+    loadPendingCount();
+
+    // Update count in panel
+    const remaining = document.querySelectorAll('#adminPanelList > div[id^="pending_"]').length;
+    if (remaining === 0) {
+      document.getElementById('adminPanelCount').textContent = 'אין בקשות ממתינות 🎉';
+      document.getElementById('adminPanelList').innerHTML = '<div style="text-align:center;color:var(--muted);padding:2rem;font-size:2rem;">✅</div>';
+    }
+  } catch(e) {
+    showToast('שגיאה: ' + e.message, 'error');
+    card.style.opacity = '1'; card.style.pointerEvents = '';
+  }
+}
+
+async function rejectGame(pendingId) {
+  const card = document.getElementById('pending_' + pendingId);
+  card.style.opacity = '.5'; card.style.pointerEvents = 'none';
+  try {
+    const { db, doc, setDoc } = window._firebase;
+    await setDoc(doc(db, 'pending_games', pendingId), { status: 'rejected' }, { merge: true });
+    card.remove();
+    showToast('❌ הבקשה נדחתה', '');
+    loadPendingCount();
+  } catch(e) {
+    showToast('שגיאה: ' + e.message, 'error');
+    card.style.opacity = '1'; card.style.pointerEvents = '';
+  }
+}
+
+window.openAdminPanel  = openAdminPanel;
+window.closeAdminPanel = closeAdminPanel;
+window.approveGame     = approveGame;
+window.rejectGame      = rejectGame;
+
+function openAdminModal() {
+  closeDropdown();
+  if (window._isAdmin) { showToast('כבר מחובר כ-ADMIN 🛡️', 'success'); return; }
+  const user = window._currentUser;
+  if (!user || user.isAnonymous) {
+    showToast('יש להתחבר עם חשבון כדי להיות ADMIN', 'error'); return;
+  }
+  checkIfAdmin(user.uid).then(() => {
+    if (!window._isAdmin) showToast('החשבון הזה אינו ADMIN', 'error');
+    else showToast('ברוך הבא, ADMIN! 🛡️', 'success');
+  });
+}
+
+function closeAdminModal() {}
+function submitAdminPassword() {}
+
+window.openAdminModal      = openAdminModal;
+window.closeAdminModal     = closeAdminModal;
+window.submitAdminPassword = submitAdminPassword;
+
+function editUrl(id) {
+  document.getElementById('url_edit_row_' + id).style.display = 'flex';
+  document.getElementById('url_input_' + id).focus();
+}
+
+function cancelEditUrl(id) {
+  document.getElementById('url_edit_row_' + id).style.display = 'none';
+}
+
+async function saveUrl(id) {
+  const newUrl = document.getElementById('url_input_' + id).value.trim();
+  if (!newUrl) return;
+  try {
+    const { db, doc, setDoc } = window._firebase;
+    await setDoc(doc(db, 'pending_games', id), { url: newUrl }, { merge: true });
+    // Update display
+    const urlDisplay = document.getElementById('url_display_' + id);
+    urlDisplay.textContent = newUrl;
+    urlDisplay.href = newUrl;
+    document.getElementById('check_link_' + id).href = newUrl;
+    document.getElementById('url_edit_row_' + id).style.display = 'none';
+    showToast('✅ URL עודכן!', 'success');
+  } catch(e) {
+    showToast('שגיאה: ' + e.message, 'error');
+  }
+}
+
+window.editUrl       = editUrl;
+window.cancelEditUrl = cancelEditUrl;
+window.saveUrl       = saveUrl;
 
 load();
+
 </script>
 </body>
 </html>
