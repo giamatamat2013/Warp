@@ -124,10 +124,15 @@ main{max-width:1300px;margin:0 auto;padding:2rem 1.5rem 5rem;position:relative;z
 .card:hover{transform:translateY(-5px) scale(1.02);border-color:var(--purple);box-shadow:0 16px 40px rgba(0,0,0,.45),0 0 0 1px var(--purple),0 0 30px rgba(123,47,255,.2);}
 @keyframes fadeUp{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:translateY(0);}}
 .card-thumb{aspect-ratio:16/10;width:100%;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;}
-.card-thumb img{width:100%;height:100%;object-fit:cover;transition:var(--t);}
-.card:hover .card-thumb img{transform:scale(1.07);}
+.card-thumb img{width:100%;height:100%;object-fit:cover;transition:opacity var(--t),transform var(--t);opacity:0;}
+.card-thumb img.loaded{opacity:1;}
+.card:hover .card-thumb img.loaded{transform:scale(1.07);}
 .no-thumb{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:2.8rem;transition:var(--t);}
 .card:hover .no-thumb{transform:scale(1.1);}
+/* shimmer skeleton while image loads */
+.thumb-shimmer{position:absolute;inset:0;background:linear-gradient(90deg,var(--bg3) 25%,rgba(255,255,255,.06) 50%,var(--bg3) 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;}
+@keyframes shimmer{0%{background-position:200% 0;}100%{background-position:-200% 0;}}
+.card-thumb img.loaded ~ .thumb-shimmer,.card-thumb img.loaded + .thumb-shimmer{display:none;}
 .play-ov{position:absolute;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;opacity:0;transition:var(--t);backdrop-filter:blur(3px);}
 .card:hover .play-ov{opacity:1;}
 .play-circle{width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,var(--purple),var(--accent));display:flex;align-items:center;justify-content:center;font-size:1.2rem;color:#fff;box-shadow:0 0 24px rgba(255,62,108,.5);transform:scale(.8);transition:var(--t);}
@@ -632,6 +637,20 @@ async function load() {
       ? val.filter(Boolean)
       : Object.values(val);
     if (!allGames.length) throw new Error('רשימת המשחקים ריקה');
+    // Patch thumbnails locally in case DB still has empty strings
+    const THUMBS = {
+      '2048':                'https://opengraph.githubassets.com/ad5a93a80b5ca3d43a5946ed078d5a34b5e27a83070a5a117815a64ea46c56c8/giamat13/2048',
+      'snake':               'https://opengraph.githubassets.com/28281394f5226de94d119f2b8e3f4f298eb681b9657147a257c2a513cbce732d/giamat13/snake',
+      'tetris':              'https://opengraph.githubassets.com/ee874d2a191235974887753d48dfb3c394e7c63cccbb93fa87d6da730be460a7/giamat13/tetris',
+      'space-game':          'https://opengraph.githubassets.com/231bd98c86ba303829ff4da41c09323fcae5b2503e3f43872245a2c92b5b0bb3/giamat13/space-game',
+      'rock-paper-scissors': 'https://opengraph.githubassets.com/5ff234a29b4d260a66592a65472c850e10e3489a78b003e173837f2df7a96f54/giamatamat2013/Rock-Paper-Scissors',
+      'land-and-city-online':'https://opengraph.githubassets.com/1977d41737431b01e06e87337592c147df09217c891a73521c3b0c1dca0553ef/giamat13/LandAndCityOnline',
+      'moto-x3m':            'https://images.cdn.famobi.com/portal/html5games/images/tmp/MotoX3mTeaser.jpg',
+      'temple-run':          'https://img.gamemonetize.co/pkyyuilfrqkcdnmrxsg60j22ypk0peje/512x384.jpg',
+      'pong':                'https://img.gamedistribution.com/a4c67fbbc9bb4d70a26a85a91e5d12cc/512x384.jpg',
+      'subway-surfers':      'https://i.gamesgo.net/uploads/game/html5/25434/thumbnail.jpg',
+    };
+    allGames.forEach(g => { if (!g.thumbnail && THUMBS[g.id]) g.thumbnail = THUMBS[g.id]; });
     init();
   } catch(e) {
     document.getElementById('loadingState').style.display = 'none';
@@ -732,9 +751,13 @@ function buildCard(game) {
   const thumb = document.createElement('div'); thumb.className = 'card-thumb';
   thumb.style.background = 'linear-gradient(135deg,'+color+'22,'+color+'08)';
   if (game.thumbnail) {
-    const img = document.createElement('img'); img.src = game.thumbnail; img.alt = game.name;
-    img.onerror = () => img.replaceWith(noThumb(game, color));
+    const shimmer = document.createElement('div'); shimmer.className = 'thumb-shimmer';
+    const img = document.createElement('img');
+    img.src = game.thumbnail; img.alt = game.name; img.loading = 'lazy';
+    img.onload  = () => { img.classList.add('loaded'); shimmer.remove(); };
+    img.onerror = () => { img.remove(); shimmer.remove(); thumb.appendChild(noThumb(game, color)); };
     thumb.appendChild(img);
+    thumb.appendChild(shimmer);
   } else { thumb.appendChild(noThumb(game, color)); }
   if (game.badge) {
     const b = document.createElement('span');
