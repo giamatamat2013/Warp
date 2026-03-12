@@ -16,5 +16,11 @@ service cloud.firestore {
       allow read, update, delete: if request.auth != null && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
     }
 
+    match /pending_edits/{docId} {
+      // Only registered (non-anonymous) users can submit edits
+      allow create: if request.auth != null && request.auth.token.firebase.sign_in_provider != 'anonymous';
+      allow read, update, delete: if request.auth != null && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+
   }
 }
